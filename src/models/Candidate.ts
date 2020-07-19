@@ -24,6 +24,7 @@ export class CandidateDTO extends Model<Candidate> implements Candidate {
     phoneNumber!: string;
     schooling!: string;
     schoolName!: string;
+    enrollmentDate!: string;
 };
 
 CandidateDTO.init({
@@ -88,6 +89,10 @@ CandidateDTO.init({
     schoolName: {
         type: DataTypes.STRING(128),
         field: 'school_name'
+    },
+    enrollmentDate: {
+        type: DataTypes.STRING(32),
+        field: 'enrollment_date'
     }
 }, {
     sequelize,

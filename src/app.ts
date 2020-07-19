@@ -26,7 +26,7 @@ class App {
         this.app.use((request, response, next) => {
             bodyParser.json()(request, response, (err) => {
                 if (err) {
-                    return response.status(400).send({ message: "Invalid JSON syntax." });
+                    return response.status(400).send({ message: "Invalid JSON syntax. Check your request.body" });
                 }
                 next();
             });

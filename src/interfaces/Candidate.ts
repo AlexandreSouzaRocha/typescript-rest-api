@@ -14,6 +14,7 @@ interface Candidate {
     phoneNumber: string,
     schooling: string,
     schoolName: string,
+    enrollmentDate?: string,
 };
 
 export default Candidate;
