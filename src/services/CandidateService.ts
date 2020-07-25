@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import CandidateRepo from '../repositories/CandidateRepo';
 import Candidate from '../interfaces/Candidate';
 import { logger } from '../utils/logger';
@@ -7,111 +8,116 @@ import Constants from '../utils/constants';
 import Validations from '../validators/Validations';
 
 class CandidateService {
-    candidateRepo: CandidateRepo;
-    errHandler: ErrorHandler;
-    validators: Validations;
+	candidateRepo: CandidateRepo;
 
-    constructor() {
-        this.candidateRepo = new CandidateRepo();
-        this.errHandler = new ErrorHandler();
-        this.validators = new Validations();
-    }
+	errHandler: ErrorHandler;
 
-    execCandidateTransactions = async (candidate: Candidate): Promise<any> => {
-        try {
-            logger.info({
-                event: 'CandidateService.execCandidateTransactions',
-                candidate
-            });
+	validators: Validations;
 
-            await this.validateCandidate(candidate);
+	constructor() {
+		this.candidateRepo = new CandidateRepo();
+		this.errHandler = new ErrorHandler();
+		this.validators = new Validations();
+	}
 
-            return await this.saveCandidate(candidate);
-        } catch (err) {
-            logger.error({
-                event: 'CandidateService.execCandidateTransactions',
-                error: err.message
-            });
+	execCandidateTransactions = async (candidate: Candidate): Promise<any> => {
+		try {
+			logger.info({
+				event: 'CandidateService.execCandidateTransactions',
+				candidate,
+			});
 
-            throw err;
-        }
-    }
+			await this.validateCandidate(candidate);
 
-    findCandidateByUniqueId = async (uniqueId: string): Promise<any> => {
-        try {
-            logger.info({
-                event: 'CandidateService.findCandidateByUniqueId',
-                uniqueId
-            });
+			return await this.saveCandidate(candidate);
+		} catch (err) {
+			logger.error({
+				event: 'CandidateService.execCandidateTransactions',
+				error: err.message,
+			});
 
-            await this.validators.validateUniqueId(uniqueId);
-            const candidate = await this.candidateRepo.finOneByUniqueId(uniqueId);
+			throw err;
+		}
+	};
 
-            if (!candidate) {
-                const message: string = Constants.MESSAGE.CANDIDATE_NOT_FOUND.replace('{}', uniqueId);
-                logger.error({
-                    event: 'CandidateService.findCandidateByUniqueId',
-                    error: message
-                });
+	findCandidateByUniqueId = async (uniqueId: string): Promise<any> => {
+		try {
+			logger.info({
+				event: 'CandidateService.findCandidateByUniqueId',
+				uniqueId,
+			});
 
-                this.errHandler.errorHandler(message, Constants.HTTPSTATUS.NOT_FOUND,
-                    Constants.EXCEPTION.CANDIDATE);
-            }
-        } catch (err) {
-            logger.error({
-                event: 'CandidateService.findCandidateByUniqueId',
-                error: err.message
-            });
+			await this.validators.validateUniqueId(uniqueId);
+			const candidate = await this.candidateRepo.finOneByUniqueId(uniqueId);
 
-            throw err;
-        }
-    }
+			if (!candidate) {
+				const message: string = Constants.MESSAGE.CANDIDATE_NOT_FOUND.replace('{}', uniqueId);
+				logger.error({
+					event: 'CandidateService.findCandidateByUniqueId',
+					error: message,
+				});
 
+				this.errHandler.errorHandler(message, Constants.HTTPSTATUS.NOT_FOUND, Constants.EXCEPTION.CANDIDATE);
+			}
+		} catch (err) {
+			logger.error({
+				event: 'CandidateService.findCandidateByUniqueId',
+				error: err.message,
+			});
 
-    private saveCandidate = async (candidate: Candidate): Promise<object | undefined> => {
-        try {
-            logger.info({
-                event: 'CandidateService.saveCandidate',
-                candidate
-            });
+			throw err;
+		}
+	};
 
-            return await this.candidateRepo.saveCandidate(candidate);
-        } catch (err) {
-            logger.error({
-                event: 'CandidateService.saveCandidate',
-                error: err.message
-            });
+	private saveCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
+		try {
+			logger.info({
+				event: 'CandidateService.saveCandidate',
+				candidate,
+			});
 
-            throw err;
-        }
-    }
+			return await this.candidateRepo.saveCandidate(candidate);
+		} catch (err) {
+			logger.error({
+				event: 'CandidateService.saveCandidate',
+				error: err.message,
+			});
 
-    private validateCandidate = async (candidate: Candidate): Promise<Candidate> => {
-        try {
-            const validatedCandidate: Candidate = await this.validators.validateCandidates(candidate);
+			throw err;
+		}
+	};
 
-            const candidateRepo: CandidateDTO | null | undefined = await this.candidateRepo.finOneByCpf(validatedCandidate.cpf);
+	private validateCandidate = async (candidate: Candidate): Promise<Candidate> => {
+		try {
+			const validatedCandidate: Candidate = await this.validators.validateCandidates(candidate);
 
-            if (candidateRepo) {
-                logger.error({
-                    event: 'CandidateService.validateCandidate',
-                    error: 'Candidate alredy exists.'
-                });
+			const candidateRepo: CandidateDTO | null | undefined = await this.candidateRepo.finOneByCpf(
+				validatedCandidate.cpf,
+			);
 
-                this.errHandler.errorHandler(Constants.MESSAGE.CANDIDATE_EXISTS, Constants.HTTPSTATUS.CONFLICT,
-                    Constants.EXCEPTION.CANDIDATE_EXISTS);
-            }
+			if (candidateRepo) {
+				logger.error({
+					event: 'CandidateService.validateCandidate',
+					error: 'Candidate alredy exists.',
+				});
 
-            return validatedCandidate;
-        } catch (err) {
-            logger.error({
-                event: 'CandidateService.validateCandidate',
-                error: err.message
-            });
+				this.errHandler.errorHandler(
+					Constants.MESSAGE.CANDIDATE_EXISTS,
+					Constants.HTTPSTATUS.CONFLICT,
+					Constants.EXCEPTION.CANDIDATE_EXISTS,
+				);
+			}
 
-            throw err;
-        }
-    }
+			return validatedCandidate;
+		} catch (err) {
+			logger.error({
+				event: 'CandidateService.validateCandidate',
+				error: err.message,
+			});
+
+			throw err;
+		}
+	};
 }
 
 export default CandidateService;

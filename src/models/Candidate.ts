@@ -1,104 +1,119 @@
-import {
-    Model,
-    DataTypes
-} from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 
 import { sequelize } from '../sequelize';
 import Candidate from '../interfaces/Candidate';
 
-const uuid: string = require('../utils/globals').uuid;
+const { uuid } = require('../utils/globals');
 
 export class CandidateDTO extends Model<Candidate> implements Candidate {
-    id?: string | undefined;
-    name!: string;
-    birthDate!: string;
-    rg!: string;
-    cpf!: string;
-    motherName!: string;
-    fatherName!: string;
-    address!: string;
-    neighborhood!: string;
-    zipCode!: string;
-    country!: string;
-    mobileNumber!: string;
-    phoneNumber!: string;
-    schooling!: string;
-    schoolName!: string;
-    enrollmentDate!: string;
-};
+  id?: string | undefined;
 
-CandidateDTO.init({
+  name!: string;
+
+  birthDate!: string;
+
+  rg!: string;
+
+  cpf!: string;
+
+  motherName!: string;
+
+  fatherName!: string;
+
+  address!: string;
+
+  neighborhood!: string;
+
+  zipCode!: string;
+
+  country!: string;
+
+  mobileNumber!: string;
+
+  phoneNumber!: string;
+
+  schooling!: string;
+
+  schoolName!: string;
+
+  enrollmentDate!: string;
+}
+
+CandidateDTO.init(
+  {
     id: {
-        type: DataTypes.STRING(64),
-        primaryKey: true,
-        field: 'id',
-        autoIncrement: true,
+      type: DataTypes.STRING(64),
+      primaryKey: true,
+      field: 'id',
+      autoIncrement: true,
     },
     name: {
-        type: DataTypes.STRING(128),
-        field: 'candidate_name'
+      type: DataTypes.STRING(128),
+      field: 'candidate_name',
     },
     birthDate: {
-        type: DataTypes.STRING(32),
-        field: 'birth_date'
+      type: DataTypes.STRING(32),
+      field: 'birth_date',
     },
     rg: {
-        type: DataTypes.STRING(16),
-        field: 'rg'
+      type: DataTypes.STRING(16),
+      field: 'rg',
     },
     cpf: {
-        type: DataTypes.STRING(32),
-        field: 'cpf'
+      type: DataTypes.STRING(32),
+      field: 'cpf',
     },
     motherName: {
-        type: DataTypes.STRING(128),
-        field: 'mother_name'
+      type: DataTypes.STRING(128),
+      field: 'mother_name',
     },
     fatherName: {
-        type: DataTypes.STRING(128),
-        field: 'father_name'
+      type: DataTypes.STRING(128),
+      field: 'father_name',
     },
     address: {
-        type: DataTypes.STRING(128),
-        field: 'father_name'
+      type: DataTypes.STRING(128),
+      field: 'father_name',
     },
     neighborhood: {
-        type: DataTypes.STRING(128),
-        field: 'neighborhood'
+      type: DataTypes.STRING(128),
+      field: 'neighborhood',
     },
     zipCode: {
-        type: DataTypes.STRING(8),
-        field: 'zip_code'
+      type: DataTypes.STRING(8),
+      field: 'zip_code',
     },
     country: {
-        type: DataTypes.STRING(128),
-        field: 'country'
+      type: DataTypes.STRING(128),
+      field: 'country',
     },
     mobileNumber: {
-        type: DataTypes.STRING(11),
-        field: 'mobile_number'
+      type: DataTypes.STRING(11),
+      field: 'mobile_number',
     },
     phoneNumber: {
-        type: DataTypes.STRING(11),
-        field: 'phone_number'
+      type: DataTypes.STRING(11),
+      field: 'phone_number',
     },
     schooling: {
-        type: DataTypes.STRING(128),
-        field: 'schooling'
+      type: DataTypes.STRING(128),
+      field: 'schooling',
     },
     schoolName: {
-        type: DataTypes.STRING(128),
-        field: 'school_name'
+      type: DataTypes.STRING(128),
+      field: 'school_name',
     },
     enrollmentDate: {
-        type: DataTypes.STRING(32),
-        field: 'enrollment_date'
-    }
-}, {
+      type: DataTypes.STRING(32),
+      field: 'enrollment_date',
+    },
+  },
+  {
     sequelize,
     modelName: 'CandidateDTO',
-});
+  },
+);
 
 CandidateDTO.beforeCreate((candidate: CandidateDTO) => {
-    candidate.id = uuid;
+  candidate.id = uuid;
 });

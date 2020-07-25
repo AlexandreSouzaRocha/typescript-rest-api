@@ -5,118 +5,130 @@ import ErrorHandler from '../errors/ErrorHandler';
 import Constants from '../utils/constants';
 
 class CandidateRepo {
-    errHandler: ErrorHandler;
+	errHandler: ErrorHandler;
 
-    constructor() {
-        this.errHandler = new ErrorHandler();
-    }
+	constructor() {
+		this.errHandler = new ErrorHandler();
+	}
 
-    saveCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
-        try {
-            const {
-                address,
-                birthDate,
-                country,
-                cpf,
-                fatherName,
-                mobileNumber,
-                motherName,
-                name,
-                neighborhood,
-                phoneNumber,
-                rg,
-                schoolName,
-                schooling,
-                zipCode,
-                enrollmentDate
-            } = candidate;
-            const createdCandidate: CandidateDTO = new CandidateDTO({
-                address,
-                birthDate,
-                country,
-                cpf,
-                fatherName,
-                motherName,
-                mobileNumber,
-                name,
-                neighborhood,
-                phoneNumber,
-                rg,
-                schoolName,
-                schooling,
-                zipCode,
-                enrollmentDate
-            });
+	saveCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
+		let response: any;
+		try {
+			const {
+				address,
+				birthDate,
+				country,
+				cpf,
+				fatherName,
+				mobileNumber,
+				motherName,
+				name,
+				neighborhood,
+				phoneNumber,
+				rg,
+				schoolName,
+				schooling,
+				zipCode,
+				enrollmentDate,
+			} = candidate;
+			const createdCandidate: CandidateDTO = new CandidateDTO({
+				address,
+				birthDate,
+				country,
+				cpf,
+				fatherName,
+				motherName,
+				mobileNumber,
+				name,
+				neighborhood,
+				phoneNumber,
+				rg,
+				schoolName,
+				schooling,
+				zipCode,
+				enrollmentDate,
+			});
 
-            const response: CandidateDTO = await createdCandidate.save();
+			response = await createdCandidate.save();
 
-            logger.info({
-                event: 'CandidateRepo.saveCandidate',
-                candidate: response,
-                message: 'Candidate saved.'
-            });
+			logger.info({
+				event: 'CandidateRepo.saveCandidate',
+				candidate: response,
+				message: 'Candidate saved.',
+			});
+		} catch (err) {
+			logger.error({
+				event: 'CandidateRepo.saveCandidate',
+				error: err.message,
+			});
 
-            return response;
-        } catch (err) {
-            logger.error({
-                event: 'CandidateRepo.saveCandidate',
-                error: err.message
-            });
+			this.errHandler.errorHandler(
+				Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
+				Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
+				Constants.EXCEPTION.DATABASE,
+			);
+		}
+		return response;
+	};
 
-            this.errHandler.errorHandler(Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
-                Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR, Constants.EXCEPTION.DATABASE);
-        }
-    }
+	finOneByCpf = async (cpf: string): Promise<CandidateDTO | null | undefined> => {
+		let candidate: CandidateDTO | null = null;
+		try {
+			candidate = await CandidateDTO.findOne({
+				where: {
+					cpf,
+				},
+			});
 
-    finOneByCpf = async (cpf: string): Promise<CandidateDTO | null | undefined> => {
-        try {
-            const candidate: CandidateDTO | null = await CandidateDTO.findOne({
-                where: {
-                    cpf
-                }
-            });
+			logger.info({
+				event: 'CandidateRepo.finOneByCpf',
+				candidate,
+				message: 'Candidate returned.',
+			});
+		} catch (err) {
+			logger.error({
+				event: 'CandidateRepo.finOneByCpf',
+				error: err.message,
+			});
 
-            logger.info({
-                event: 'CandidateRepo.finOneByCpf',
-                message: 'Candidate returned.'
-            });
+			this.errHandler.errorHandler(
+				Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
+				Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
+				Constants.EXCEPTION.DATABASE,
+			);
+		}
+		return candidate;
+	};
 
-            return candidate;
-        } catch (err) {
-            logger.error({
-                event: 'CandidateRepo.finOneByCpf',
-                error: err.message
-            });
+	finOneByUniqueId = async (uinqueId: string): Promise<CandidateDTO | null | undefined> => {
+		let candidate: CandidateDTO | null = null;
+		try {
+			candidate = await CandidateDTO.findOne({
+				where: {
+					id: uinqueId,
+				},
+			});
 
-            this.errHandler.errorHandler(Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
-                Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR, Constants.EXCEPTION.DATABASE);
-        }
-    }
+			logger.info({
+				event: 'CandidateRepo.finOneByUniqueId',
+				message: 'Candidate returned.',
+			});
 
-    finOneByUniqueId = async (uinqueId: string): Promise<CandidateDTO | null | undefined> => {
-        try {
-            const candidate: CandidateDTO | null = await CandidateDTO.findOne({
-                where: {
-                    id: uinqueId
-                }
-            });
+			return candidate;
+		} catch (err) {
+			logger.error({
+				event: 'CandidateRepo.finOneByUniqueId',
+				error: err.message,
+			});
 
-            logger.info({
-                event: 'CandidateRepo.finOneByUniqueId',
-                message: 'Candidate returned.'
-            });
-
-            return candidate;
-        } catch (err) {
-            logger.error({
-                event: 'CandidateRepo.finOneByUniqueId',
-                error: err.message
-            });
-
-            this.errHandler.errorHandler(Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
-                Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR, Constants.EXCEPTION.DATABASE);
-        }
-    }
+			this.errHandler.errorHandler(
+				Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
+				Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
+				Constants.EXCEPTION.DATABASE,
+			);
+		}
+		return candidate;
+	};
 }
 
 export default CandidateRepo;

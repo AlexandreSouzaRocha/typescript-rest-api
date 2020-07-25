@@ -2,62 +2,64 @@ import Constants from '../utils/constants';
 import CustomException from './CustomException';
 import { logger } from '../utils/logger';
 
-const uuid = require('../utils/globals').uuid;
+const { uuid } = require('../utils/globals');
 
 class ErrorHandler {
-    err: any;
-    code!: number;
-    exceptionType!: string;
+  err: any;
 
-    constructor() { }
+  code!: number;
 
-    errorHandler = (err: any, code: number, exceptionType: string) => {
-        this.code = code || Constants.HTTPSTATUS.BAD_REQUEST;
-        this.err = err || err.message || Constants.MESSAGE.DEFUALT.BAD_REQUEST;
+  exceptionType!: string;
 
-        if (exceptionType === Constants.EXCEPTION.CANDIDATE) {
-            this.code = code;
-            this.err = err;
-            this.exceptionType = exceptionType;
-        }
-        if (exceptionType === Constants.EXCEPTION.DATABASE) {
-            this.code = code || Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR;
-            this.err = err || Constants.MESSAGE.DEFUALT.DATABASE_ERROR;
-            this.exceptionType = exceptionType;
-        }
+	constructor() {}
 
-        logger.error({
-            event: 'ErrorHandler.errorHandler',
-            message: this.err,
-            statusCode: this.code,
-            exceptionType: this.exceptionType
-        });
+  errorHandler = (err: any, code: number, exceptionType: string) => {
+    this.code = code || Constants.HTTPSTATUS.BAD_REQUEST;
+    this.err = err || err.message || Constants.MESSAGE.DEFUALT.BAD_REQUEST;
 
-        throw new CustomException(this.err, this.exceptionType, this.code);
+    if (exceptionType === Constants.EXCEPTION.CANDIDATE) {
+      this.code = code;
+      this.err = err;
+      this.exceptionType = exceptionType;
+    }
+    if (exceptionType === Constants.EXCEPTION.DATABASE) {
+      this.code = code || Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR;
+      this.err = err || Constants.MESSAGE.DEFUALT.DATABASE_ERROR;
+      this.exceptionType = exceptionType;
     }
 
-    errorResponse = (error: any): object => {
-        const responseError: any = {};
+    logger.error({
+      event: 'ErrorHandler.errorHandler',
+      message: this.err,
+      statusCode: this.code,
+			exceptionType: this.exceptionType,
+    });
 
-        if (error && typeof error !== "string") {
-            if (Array.isArray(error.details)) {
-                const messageArray: any[] =[];
-                
-                error.forEach((message: any) => messageArray.push(message));
-                responseError.message = messageArray;
-            }
-            if (error.message) responseError.message = error.message;
-        }
-        responseError.message = error;
-        responseError.requestId = uuid;
+    throw new CustomException(this.err, this.exceptionType, this.code);
+	};
 
-        logger.error({
-            event: 'ErrorHandler.errorResponse',
-            responseBody: responseError
-        });
-        
-        return responseError;
+  errorResponse = (error: any): object => {
+    const responseError: any = {};
+
+		if (error && typeof error !== 'string') {
+      if (Array.isArray(error.details)) {
+				const messageArray: any[] = [];
+
+        error.forEach((message: any) => messageArray.push(message));
+        responseError.message = messageArray;
+      }
+      if (error.message) responseError.message = error.message;
     }
+    responseError.message = error;
+    responseError.requestId = uuid;
+
+    logger.error({
+      event: 'ErrorHandler.errorResponse',
+			responseBody: responseError,
+    });
+
+    return responseError;
+	};
 }
 
 export default ErrorHandler;
