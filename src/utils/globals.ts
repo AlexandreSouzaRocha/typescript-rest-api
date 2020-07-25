@@ -1,3 +1,5 @@
 import * as uuid from 'uuid';
 
-exports.uuid = uuid.v4();
+const uuidV4: string = uuid.v4();
+
+export default uuidV4;

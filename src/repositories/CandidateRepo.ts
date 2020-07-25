@@ -1,8 +1,9 @@
-import { CandidateDTO } from '../models/Candidate';
+import CandidateDTO from '../models/Candidate';
 import { logger } from '../utils/logger';
 import Candidate from '../interfaces/Candidate';
 import ErrorHandler from '../errors/ErrorHandler';
 import Constants from '../utils/constants';
+import uuidV4 from '../utils/globals';
 
 class CandidateRepo {
 	errHandler: ErrorHandler;
@@ -31,6 +32,7 @@ class CandidateRepo {
 				zipCode,
 				enrollmentDate,
 			} = candidate;
+
 			const createdCandidate: CandidateDTO = new CandidateDTO({
 				address,
 				birthDate,
@@ -48,7 +50,9 @@ class CandidateRepo {
 				zipCode,
 				enrollmentDate,
 			});
-
+			createdCandidate.addHook('beforeCreate', (attribute: CandidateDTO) => {
+				attribute.id = uuidV4;
+			});
 			response = await createdCandidate.save();
 
 			logger.info({
