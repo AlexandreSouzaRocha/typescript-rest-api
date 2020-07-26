@@ -1,52 +1,72 @@
 import { Request, Response } from 'express';
 
 import CandidateService from '../services/CandidateService';
-import ErrorHandler from '../errors/ErrorHandler';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 import Constants from '../utils/constants';
 import Candidate from '../interfaces/Candidate';
-import { CandidateDTO } from '../models/Candidate';
+import CandidateDTO from '../models/Candidate';
+import ErrorFactory from '../errors/ErrorFactory';
 
 const candidateService: CandidateService = new CandidateService();
-const errHandler: ErrorHandler = new ErrorHandler();
+const errorFactory: ErrorFactory = new ErrorFactory();
 
-export const postCandidates = async (request: Request, response: Response): Promise<object> => {
-  try {
-    logger.info({ event: 'CandidateController.postCandidate' });
+export const postCandidates = async (request: Request, response: Response): Promise<Response> => {
+	try {
+		logger.info({ event: 'CandidateController.postCandidate' });
 
-    const { body } = request;
-    const candidate: Candidate = await candidateService.execCandidateTransactions(body);
+		const { body } = request;
+		const candidate: Candidate = await candidateService.execCandidateTransactions(body);
 
 		return response.status(Constants.HTTPSTATUS.CREATED).json(candidate);
-  } catch (err) {
-    logger.error({
-      event: 'CandidateController.postCandidate',
-      error: err.message,
+	} catch (err) {
+		logger.error({
+			event: 'CandidateController.postCandidate',
+			error: err.message,
 			statusCode: err.code || Constants.HTTPSTATUS.BAD_REQUEST,
-    });
+		});
 
-    return response
-      .status(err.code || Constants.HTTPSTATUS.BAD_REQUEST)
-      .json(errHandler.errorResponse(err || err.message));
-  }
+		return response
+			.status(err.statusCode || Constants.HTTPSTATUS.BAD_REQUEST)
+			.json(errorFactory.getResponse(err || err.message));
+	}
 };
 
-export const getCandidateByUniqueId = async (request: Request, response: Response): Promise<object> => {
-  try {
-    const { uniqueId } = request.params;
+export const getCandidateByUniqueId = async (request: Request, response: Response): Promise<Response> => {
+	try {
+		const { uniqueId } = request.params;
 
-    const candidate: CandidateDTO = await candidateService.findCandidateByUniqueId(uniqueId);
+		const candidate: CandidateDTO | null | undefined = await candidateService.findCandidateByUniqueId(uniqueId);
 
 		return response.status(Constants.HTTPSTATUS.OK).json(candidate);
-  } catch (err) {
-    logger.error({
-      event: 'CandidateController.getCandidateByUniqueId',
-      error: err.message,
+	} catch (err) {
+		logger.error({
+			event: 'CandidateController.getCandidateByUniqueId',
+			error: err.message,
 			statusCode: err.code || Constants.HTTPSTATUS.BAD_REQUEST,
-    });
+		});
 
-    return response
-      .status(err.code || Constants.HTTPSTATUS.BAD_REQUEST)
-      .json(errHandler.errorResponse(err || err.message));
-  }
+		return response
+			.status(err.code || Constants.HTTPSTATUS.BAD_REQUEST)
+			.json(errorFactory.getResponse(err || err.message));
+	}
+};
+
+export const getCandidateByCPf = async (request: Request, response: Response): Promise<Response> => {
+	try {
+		const { documentNumber }: any = request.headers;
+
+		const candidate: CandidateDTO | null | undefined = await candidateService.findCandidateByCpf(documentNumber);
+
+		return response.status(Constants.HTTPSTATUS.OK).json(candidate);
+	} catch (err) {
+		logger.error({
+			event: 'CandidateController.getCandidateByUniqueId',
+			error: err.message,
+			statusCode: err.code || Constants.HTTPSTATUS.BAD_REQUEST,
+		});
+
+		return response
+			.status(err.code || Constants.HTTPSTATUS.BAD_REQUEST)
+			.json(errorFactory.getResponse(err || err.message));
+	}
 };

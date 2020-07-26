@@ -1,15 +1,23 @@
 import CandidateDTO from '../models/Candidate';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 import Candidate from '../interfaces/Candidate';
-import ErrorHandler from '../errors/ErrorHandler';
+import ErrorFactory from '../errors/ErrorFactory';
+import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
 import Constants from '../utils/constants';
 import uuidV4 from '../utils/globals';
+import ErrorResponse from '../interfaces/ErrorResponse';
+import CustomEventEmitter from '../utils/CustomEventEmitter';
 
 class CandidateRepo {
-	errHandler: ErrorHandler;
+	errorFactory: ErrorFactory;
+
+	errorResponse!: ErrorResponse;
+
+	validationHandlerFactory: ValidationHandlerFactory;
 
 	constructor() {
-		this.errHandler = new ErrorHandler();
+		this.errorFactory = new ErrorFactory();
+		this.validationHandlerFactory = new ValidationHandlerFactory();
 	}
 
 	saveCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
@@ -65,17 +73,18 @@ class CandidateRepo {
 				event: 'CandidateRepo.saveCandidate',
 				error: err.message,
 			});
-
-			this.errHandler.errorHandler(
-				Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
-				Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
-				Constants.EXCEPTION.DATABASE,
-			);
+			this.errorResponse = {
+				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
+				requestId: uuidV4,
+				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
+				exceptionType: Constants.EXCEPTION.DATABASE,
+			};
+			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
 		return response;
 	};
 
-	finOneByCpf = async (cpf: string): Promise<CandidateDTO | null | undefined> => {
+	findOneByCpf = async (cpf: string): Promise<CandidateDTO | null | undefined> => {
 		let candidate: CandidateDTO | null = null;
 		try {
 			candidate = await CandidateDTO.findOne({
@@ -94,12 +103,13 @@ class CandidateRepo {
 				event: 'CandidateRepo.finOneByCpf',
 				error: err.message,
 			});
-
-			this.errHandler.errorHandler(
-				Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
-				Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
-				Constants.EXCEPTION.DATABASE,
-			);
+			this.errorResponse = {
+				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
+				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
+				requestId: uuidV4,
+				exceptionType: Constants.EXCEPTION.DATABASE,
+			};
+			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
 		return candidate;
 	};
@@ -124,14 +134,56 @@ class CandidateRepo {
 				event: 'CandidateRepo.finOneByUniqueId',
 				error: err.message,
 			});
-
-			this.errHandler.errorHandler(
-				Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
-				Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
-				Constants.EXCEPTION.DATABASE,
-			);
+			this.errorResponse = {
+				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
+				requestId: uuidV4,
+				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
+				exceptionType: Constants.EXCEPTION.DATABASE,
+			};
+			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
 		return candidate;
+	};
+
+	deleteByUniqueId = async (candidate: CandidateDTO): Promise<string | undefined> => {
+		try {
+			logger.info({ event: 'CandidateRepo.deleteByUniqueId' });
+
+			await candidate.destroy();
+		} catch (err) {
+			logger.error({
+				event: 'CandidateRepo.deleteByUniqueId',
+				error: err.message,
+			});
+			this.errorResponse = {
+				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
+				requestId: uuidV4,
+				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
+				exceptionType: Constants.EXCEPTION.DATABASE,
+			};
+			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+		}
+		return candidate.id;
+	};
+
+	findAllHealthCheck = async (): Promise<CandidateDTO[]> => {
+		let candidates: CandidateDTO[] = [];
+		try {
+			candidates = await CandidateDTO.findAll();
+		} catch (err) {
+			logger.error({
+				event: 'CandidateRepo.deleteByUniqueId',
+				error: err.message,
+			});
+			this.errorResponse = {
+				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
+				requestId: uuidV4,
+				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
+				exceptionType: Constants.EXCEPTION.DATABASE,
+			};
+			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+		}
+		return candidates;
 	};
 }
 

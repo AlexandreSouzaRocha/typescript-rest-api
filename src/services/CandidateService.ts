@@ -1,23 +1,31 @@
 /* eslint-disable import/extensions */
 import CandidateRepo from '../repositories/CandidateRepo';
 import Candidate from '../interfaces/Candidate';
-import { logger } from '../utils/logger';
-import ErrorHandler from '../errors/ErrorHandler';
-import { CandidateDTO } from '../models/Candidate';
+import logger from '../utils/logger';
+import ErrorFactory from '../errors/ErrorFactory';
+import CandidateDTO from '../models/Candidate';
 import Constants from '../utils/constants';
 import Validations from '../validators/Validations';
+import ErrorResponse from '../interfaces/ErrorResponse';
+import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
+import uuidV4 from '../utils/globals';
 
 class CandidateService {
 	candidateRepo: CandidateRepo;
 
-	errHandler: ErrorHandler;
+	errorFactory: ErrorFactory;
 
 	validators: Validations;
 
+	errorResponse!: ErrorResponse;
+
+	validationHandlerFactory: ValidationHandlerFactory;
+
 	constructor() {
 		this.candidateRepo = new CandidateRepo();
-		this.errHandler = new ErrorHandler();
+		this.errorFactory = new ErrorFactory();
 		this.validators = new Validations();
+		this.validationHandlerFactory = new ValidationHandlerFactory();
 	}
 
 	execCandidateTransactions = async (candidate: Candidate): Promise<any> => {
@@ -40,7 +48,8 @@ class CandidateService {
 		}
 	};
 
-	findCandidateByUniqueId = async (uniqueId: string): Promise<any> => {
+	findCandidateByUniqueId = async (uniqueId: string): Promise<CandidateDTO | null | undefined> => {
+		let candidate: CandidateDTO | null | undefined;
 		try {
 			logger.info({
 				event: 'CandidateService.findCandidateByUniqueId',
@@ -48,7 +57,7 @@ class CandidateService {
 			});
 
 			await this.validators.validateUniqueId(uniqueId);
-			const candidate = await this.candidateRepo.finOneByUniqueId(uniqueId);
+			candidate = await this.candidateRepo.finOneByUniqueId(uniqueId);
 
 			if (!candidate) {
 				const message: string = Constants.MESSAGE.CANDIDATE_NOT_FOUND.replace('{}', uniqueId);
@@ -56,9 +65,80 @@ class CandidateService {
 					event: 'CandidateService.findCandidateByUniqueId',
 					error: message,
 				});
-
-				this.errHandler.errorHandler(message, Constants.HTTPSTATUS.NOT_FOUND, Constants.EXCEPTION.CANDIDATE);
+				this.errorResponse = {
+					message,
+					statusCode: Constants.HTTPSTATUS.NOT_FOUND,
+					requestId: uuidV4,
+					exceptionType: Constants.EXCEPTION.CANDIDATE,
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 			}
+		} catch (err) {
+			logger.error({
+				event: 'CandidateService.findCandidateByUniqueId',
+				error: err.message,
+			});
+
+			throw err;
+		}
+		return candidate;
+	};
+
+	findCandidateByCpf = async (documentNumber: string): Promise<CandidateDTO | null | undefined> => {
+		let candidate: CandidateDTO | null | undefined;
+		try {
+			logger.info({
+				event: 'CandidateService.findCandidateByUniqueId',
+				documentNumber,
+			});
+
+			await this.validators.validateCpf(documentNumber);
+			candidate = await this.candidateRepo.findOneByCpf(documentNumber);
+
+			if (!candidate) {
+				const message: string = Constants.MESSAGE.CANDIDATE_NOT_FOUND.replace('{}', documentNumber);
+				logger.error({
+					event: 'CandidateService.findCandidateByCpf',
+					error: message,
+				});
+				this.errorResponse = {
+					message,
+					statusCode: Constants.HTTPSTATUS.NOT_FOUND,
+					requestId: uuidV4,
+					exceptionType: Constants.EXCEPTION.CANDIDATE,
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+			}
+		} catch (err) {
+			logger.error({
+				event: 'CandidateService.findCandidateByUniqueId',
+				error: err.message,
+			});
+
+			throw err;
+		}
+		return candidate;
+	};
+
+	deleteByUniqueId = async (uniqueId: string): Promise<string | undefined> => {
+		try {
+			const candidate: any = await this.candidateRepo.finOneByUniqueId(uniqueId);
+
+			if (!candidate) {
+				logger.error({
+					event: 'CandidateRepo.deleteByUniqueId',
+					error: Constants.MESSAGE.CANDIDATE_NOT_FOUND.replace('{}', uniqueId),
+				});
+				this.errorResponse = {
+					message: Constants.MESSAGE.CANDIDATE_NOT_FOUND.replace('{}', uniqueId),
+					statusCode: Constants.HTTPSTATUS.NOT_FOUND,
+					requestId: uuidV4,
+					exceptionType: Constants.EXCEPTION.CANDIDATE,
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+			}
+
+			return await this.candidateRepo.deleteByUniqueId(candidate);
 		} catch (err) {
 			logger.error({
 				event: 'CandidateService.findCandidateByUniqueId',
@@ -91,7 +171,7 @@ class CandidateService {
 		try {
 			const validatedCandidate: Candidate = await this.validators.validateCandidates(candidate);
 
-			const candidateRepo: CandidateDTO | null | undefined = await this.candidateRepo.finOneByCpf(
+			const candidateRepo: CandidateDTO | null | undefined = await this.candidateRepo.findOneByCpf(
 				validatedCandidate.cpf,
 			);
 
@@ -100,12 +180,13 @@ class CandidateService {
 					event: 'CandidateService.validateCandidate',
 					error: 'Candidate alredy exists.',
 				});
-
-				this.errHandler.errorHandler(
-					Constants.MESSAGE.CANDIDATE_EXISTS,
-					Constants.HTTPSTATUS.CONFLICT,
-					Constants.EXCEPTION.CANDIDATE_EXISTS,
-				);
+				this.errorResponse = {
+					message: Constants.MESSAGE.CANDIDATE_EXISTS,
+					statusCode: Constants.HTTPSTATUS.CONFLICT,
+					exceptionType: Constants.EXCEPTION.CANDIDATE_EXISTS,
+					requestId: uuidV4,
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 			}
 
 			return validatedCandidate;

@@ -2,17 +2,25 @@ import * as Joi from 'joi';
 
 import Constants from '../utils/constants';
 import { validateAsync } from './joi.config';
-import { logger } from '../utils/logger';
-import ErrorHandler from '../errors/ErrorHandler';
+import logger from '../utils/logger';
+import ErrorFactory from '../errors/ErrorFactory';
+import ErrorResponse from '../interfaces/ErrorResponse';
+import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
+import uuidV4 from '../utils/globals';
 
 class Validations {
-	errHandler: ErrorHandler;
+	errorFactory: ErrorFactory;
+
+	errorResponse!: ErrorResponse;
+
+	validationHandlerFactory: ValidationHandlerFactory;
 
 	constructor() {
-		this.errHandler = new ErrorHandler();
+		this.errorFactory = new ErrorFactory();
+		this.validationHandlerFactory = new ValidationHandlerFactory();
 	}
 
-	validateCandidates = async (model: any) => {
+	validateCandidates = async (model: any): Promise<any> => {
 		try {
 			const schema: Joi.ObjectSchema = Joi.object()
 				.options(Constants.JOI.CONFIG)
@@ -97,27 +105,45 @@ class Validations {
 				event: 'Validations.validateCandidates',
 				error: err.details || err.message,
 			});
-
-			throw err;
+			this.errorResponse = {
+				message: err.details,
+				statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
+				requestId: uuidV4,
+				exceptionType: Constants.EXCEPTION.VALIDATION,
+			};
+			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
 	};
 
 	validateUniqueId = async (uniqueId: string): Promise<any> => {
-		try {
-			if (!RegExp(Constants.REGEX.UUID).test(uniqueId) && typeof uniqueId !== 'string') {
-				logger.error({
-					event: 'Validations.validateCandidates',
-					error: Constants.MESSAGE.INVALID.UNIQUE_ID,
-				});
+		if (!RegExp(Constants.REGEX.UUID).test(uniqueId) && typeof uniqueId !== 'string') {
+			logger.error({
+				event: 'Validations.validateCandidates',
+				error: Constants.MESSAGE.INVALID.UNIQUE_ID,
+			});
+			this.errorResponse = {
+				message: Constants.MESSAGE.INVALID.UNIQUE_ID.replace('{}', uniqueId),
+				statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
+				exceptionType: Constants.EXCEPTION.VALIDATION,
+				requestId: uuidV4,
+			};
+			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+		}
+	};
 
-				this.errHandler.errorHandler(
-					Constants.MESSAGE.INVALID.UNIQUE_ID.replace('{}', uniqueId),
-					Constants.HTTPSTATUS.BAD_REQUEST,
-					Constants.EXCEPTION.VALIDATION,
-				);
-			}
-		} catch (err) {
-			throw err;
+	validateCpf = async (documentNumber: string): Promise<any> => {
+		if (!RegExp(Constants.REGEX.CPF).test(documentNumber) && typeof documentNumber !== 'string') {
+			logger.error({
+				event: 'Validations.validateCandidates',
+				error: Constants.MESSAGE.INVALID.CPF,
+			});
+			this.errorResponse = {
+				message: Constants.MESSAGE.INVALID.CPF,
+				statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
+				exceptionType: Constants.EXCEPTION.VALIDATION,
+				requestId: uuidV4,
+			};
+			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
 	};
 }

@@ -1,13 +1,12 @@
 import * as winston from 'winston';
-
-const { uuid } = require('./globals');
+import uuidV4 from './globals';
 
 const { createLogger, format, transports } = winston;
 const { combine, timestamp, printf, json } = format;
 
 const customFormat = printf((info) => {
 	const message = {
-		uuid,
+		uuidV4,
 		message: info.message,
 		level: info.level,
 		timestamp: info.timestamp,
@@ -15,7 +14,10 @@ const customFormat = printf((info) => {
 
 	return `[${info.level.toUpperCase()}]: ${JSON.stringify(message)}`;
 });
-export const logger = createLogger({
+
+const logger = createLogger({
 	format: combine(json(), timestamp(), customFormat),
 	transports: [new transports.Console()],
 });
+
+export default logger;
