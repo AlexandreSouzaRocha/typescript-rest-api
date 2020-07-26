@@ -24,6 +24,8 @@ module.exports = {
 	},
 	plugins: ['@typescript-eslint', 'prettier'],
 	rules: {
+		'@typescript-eslint/no-unused-vars': 0,
+		'no-unused-vars': 0,
 		'no-useless-constructor': 'off',
 		'@typescript-eslint/no-useless-constructor': ['off'],
 		'no-explicit-any': 'off',
@@ -32,5 +34,10 @@ module.exports = {
 		'no-empty-function': 0,
 		'@typescript-eslint/no-empty-function': 0,
 		'consistent-return': 0,
+		'no-param-reassign': ['error', { props: false }],
+		'class-methods-use-this': 0,
+		'import/prefer-default-export': ['off'],
+		'@typescript-eslint/import/prefer-default-export': ['off'],
+		'@typescript-eslint/explicit-module-boundary-types': 'off',
 	},
 };
