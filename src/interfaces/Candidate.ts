@@ -15,6 +15,7 @@ interface Candidate {
 	schooling: string;
 	schoolName: string;
 	enrollmentDate?: string;
+	candidateStatus: string;
 }
 
 export default Candidate;

@@ -6,7 +6,6 @@ import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
 import Constants from '../utils/constants';
 import uuidV4 from '../utils/globals';
 import ErrorResponse from '../interfaces/ErrorResponse';
-import CustomEventEmitter from '../utils/CustomEventEmitter';
 
 class CandidateRepo {
 	errorFactory: ErrorFactory;
@@ -149,7 +148,9 @@ class CandidateRepo {
 		try {
 			logger.info({ event: 'CandidateRepo.deleteByUniqueId' });
 
-			await candidate.destroy();
+			await candidate.update({
+				candidateStatus: Constants.CANDIDATE.STATUS.DELETED,
+			});
 		} catch (err) {
 			logger.error({
 				event: 'CandidateRepo.deleteByUniqueId',

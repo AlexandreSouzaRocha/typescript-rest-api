@@ -1,8 +1,7 @@
 import { Sequelize } from 'sequelize';
-import { DB_HOST, DB_NAME, DB_PORT, DB_PASSWORD, DB_USER } from './config';
+import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER } from './config';
 
 export const sequelize: Sequelize = new Sequelize({
-	port: DB_PORT,
 	host: DB_HOST,
 	database: DB_NAME,
 	username: DB_USER,
@@ -12,6 +11,7 @@ export const sequelize: Sequelize = new Sequelize({
 	sync: {
 		force: false,
 	},
+	timezone: 'America/Sao_Paulo',
 	define: {
 		freezeTableName: true,
 		createdAt: false,

@@ -10,6 +10,7 @@ abstract class ErrorHandlerFactory {
 			message: err.message,
 			requestId: err.requestId,
 			statusCode: err.statusCode,
+			exceptionType: err.exceptionType,
 		};
 
 		errorHandler.throwError(errorResponse);

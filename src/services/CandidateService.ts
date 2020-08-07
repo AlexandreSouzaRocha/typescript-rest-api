@@ -122,22 +122,7 @@ class CandidateService {
 
 	deleteByUniqueId = async (uniqueId: string): Promise<string | undefined> => {
 		try {
-			const candidate: any = await this.candidateRepo.finOneByUniqueId(uniqueId);
-
-			if (!candidate) {
-				logger.error({
-					event: 'CandidateRepo.deleteByUniqueId',
-					error: Constants.MESSAGE.CANDIDATE_NOT_FOUND.replace('{}', uniqueId),
-				});
-				this.errorResponse = {
-					message: Constants.MESSAGE.CANDIDATE_NOT_FOUND.replace('{}', uniqueId),
-					statusCode: Constants.HTTPSTATUS.NOT_FOUND,
-					requestId: uuidV4,
-					exceptionType: Constants.EXCEPTION.CANDIDATE,
-				};
-				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
-			}
-
+			const candidate: any = await this.validateDeletition(uniqueId);
 			return await this.candidateRepo.deleteByUniqueId(candidate);
 		} catch (err) {
 			logger.error({
@@ -199,6 +184,46 @@ class CandidateService {
 			throw err;
 		}
 	};
+
+	private async validateDeletition(uniqueId: string): Promise<CandidateDTO | undefined> {
+		try {
+			const candidate: any = await this.candidateRepo.finOneByUniqueId(uniqueId);
+
+			if (!candidate) {
+				logger.error({
+					event: 'CandidateRepo.deleteByUniqueId',
+					error: Constants.MESSAGE.CANDIDATE_NOT_FOUND.replace('{}', uniqueId),
+				});
+				this.errorResponse = {
+					message: Constants.MESSAGE.CANDIDATE_NOT_FOUND.replace('{}', uniqueId),
+					statusCode: Constants.HTTPSTATUS.NOT_FOUND,
+					requestId: uuidV4,
+					exceptionType: Constants.EXCEPTION.CANDIDATE,
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+			}
+			if (candidate.candidateStatus === Constants.CANDIDATE.STATUS.DELETED) {
+				logger.error({
+					event: 'CandidateRepo.deleteByUniqueId',
+					error: Constants.MESSAGE.CANDIDATE_ALREADY_DELETED.replace('{}', uniqueId),
+				});
+				this.errorResponse = {
+					message: Constants.MESSAGE.CANDIDATE_ALREADY_DELETED.replace('{}', uniqueId),
+					statusCode: Constants.HTTPSTATUS.CONFLICT,
+					requestId: uuidV4,
+					exceptionType: Constants.EXCEPTION.CANDIDATE,
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+			}
+
+			return candidate;
+		} catch (err) {
+			logger.error({
+				event: 'CandidateService.validateDeletition',
+				error: err.message,
+			});
+		}
+	}
 }
 
 export default CandidateService;

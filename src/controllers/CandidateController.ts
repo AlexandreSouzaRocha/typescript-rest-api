@@ -6,9 +6,11 @@ import Constants from '../utils/constants';
 import Candidate from '../interfaces/Candidate';
 import CandidateDTO from '../models/Candidate';
 import ErrorFactory from '../errors/ErrorFactory';
+import Commons from '../utils/Commons';
 
 const candidateService: CandidateService = new CandidateService();
 const errorFactory: ErrorFactory = new ErrorFactory();
+const commons: Commons = new Commons();
 
 export const postCandidates = async (request: Request, response: Response): Promise<Response> => {
 	try {
@@ -61,6 +63,29 @@ export const getCandidateByCPf = async (request: Request, response: Response): P
 	} catch (err) {
 		logger.error({
 			event: 'CandidateController.getCandidateByUniqueId',
+			error: err.message,
+			statusCode: err.code || Constants.HTTPSTATUS.BAD_REQUEST,
+		});
+
+		return response
+			.status(err.code || Constants.HTTPSTATUS.BAD_REQUEST)
+			.json(errorFactory.getResponse(err || err.message));
+	}
+};
+
+export const deleteByUniqueId = async (request: Request, response: Response): Promise<Response> => {
+	try {
+		const { uniqueId } = request.params;
+
+		const candidateDeleted: string | undefined = await candidateService.deleteByUniqueId(uniqueId);
+
+		return response.status(Constants.HTTPSTATUS.OK).json({
+			message: Constants.MESSAGE.CANDIDATE_DELETED.replace('{}', `${candidateDeleted}`),
+			deletedAt: Commons.getLocaleDate(),
+		});
+	} catch (err) {
+		logger.error({
+			event: 'CandidateController.deleteByUniqueId',
 			error: err.message,
 			statusCode: err.code || Constants.HTTPSTATUS.BAD_REQUEST,
 		});

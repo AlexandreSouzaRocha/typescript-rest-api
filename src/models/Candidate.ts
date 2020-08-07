@@ -35,6 +35,8 @@ class CandidateDTO extends Model<Candidate> implements Candidate {
 	schoolName!: string;
 
 	enrollmentDate!: string;
+
+	candidateStatus!: string;
 }
 
 CandidateDTO.init(
@@ -103,6 +105,10 @@ CandidateDTO.init(
 		enrollmentDate: {
 			type: DataTypes.STRING(32),
 			field: 'enrollment_date',
+		},
+		candidateStatus: {
+			type: DataTypes.STRING(32),
+			field: 'candidate_status',
 		},
 	},
 	{

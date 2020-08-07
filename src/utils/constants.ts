@@ -2,6 +2,13 @@ const Constants = {
 	EVENT: {
 		HEALTH_CHECK: 'HealthCheckEvent',
 	},
+	CANDIDATE: {
+		STATUS: {
+			APPROVED: 'APPROVED',
+			DELETED: 'DELETED',
+			DISAPPROVED: 'DISAPPROVED',
+		},
+	},
 	REGEX: {
 		NAME: /[A-Z][a-zA-Z][^#&<>\\"~;$^%{}?]{1,128}$/,
 		PHONE: /^[0-9]{8,11}$/,
@@ -41,6 +48,8 @@ const Constants = {
 		},
 		CANDIDATE_EXISTS: 'The candidate {} alredy exists.',
 		CANDIDATE_NOT_FOUND: 'The candidate {} was not found.',
+		CANDIDATE_DELETED: 'The candidate {} has been deleted sucessfully.',
+		CANDIDATE_ALREADY_DELETED: 'The candidate {} has been already deleted.',
 	},
 	EXCEPTION: {
 		CANDIDATE: 'GCMCandidateException',
