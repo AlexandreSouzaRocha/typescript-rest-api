@@ -1,4 +1,4 @@
-import CandidateDTO from '../models/Candidate';
+import CandidateDTO from '../models/CandidateDTO';
 import logger from '../utils/logger';
 import Candidate from '../interfaces/Candidate';
 import ErrorFactory from '../errors/ErrorFactory';

@@ -3,7 +3,7 @@ import CandidateRepo from '../repositories/CandidateRepo';
 import Candidate from '../interfaces/Candidate';
 import logger from '../utils/logger';
 import ErrorFactory from '../errors/ErrorFactory';
-import CandidateDTO from '../models/Candidate';
+import CandidateDTO from '../models/CandidateDTO';
 import Constants from '../utils/constants';
 import Validations from '../validators/Validations';
 import ErrorResponse from '../interfaces/ErrorResponse';

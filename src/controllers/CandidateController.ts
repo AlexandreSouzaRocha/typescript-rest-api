@@ -4,7 +4,7 @@ import CandidateService from '../services/CandidateService';
 import logger from '../utils/logger';
 import Constants from '../utils/constants';
 import Candidate from '../interfaces/Candidate';
-import CandidateDTO from '../models/Candidate';
+import CandidateDTO from '../models/CandidateDTO';
 import ErrorFactory from '../errors/ErrorFactory';
 import Commons from '../utils/Commons';
 
