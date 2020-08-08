@@ -1,7 +1,8 @@
 CREATE TABLE gcm_candidate.candidate (
-    id VARCHAR (64) NOT NULL PRIMARY_KEY,
+    id VARCHAR (64) NOT NULL PRIMARY KEY,
     candidate_name VARCHAR(128) NOT NULL,
-    birth_date TIMESTAMP (4) WITHOUT TIME ZONE,
+    birth_date TIMESTAMP (4) WITHOUT TIME ZONE NOT NULL,
+    rg VARCHAR (32) NOT NULL,
     cpf VARCHAR (32) NOT NULL,
     mother_name VARCHAR (128) NOT NULL,
     father_name VARCHAR (128) NOT NULL,
@@ -14,9 +15,9 @@ CREATE TABLE gcm_candidate.candidate (
     schol_name VARCHAR (128) NOT NULL,
     candidate_status VARCHAR (32) NOT NULL,
     enrollment_date TIMESTAMP (4) WITHOUT TIME ZONE NOT NULL,
-    updated_date TIMESTAMP (4) WITHOUT TIME ZONE NULL,
+    updated_date TIMESTAMP (4) WITHOUT TIME ZONE NULL
 ) WITH (
     OIDS = false
 ) TABLESPACE pg_default;
 
-CREATE UNIQUE INDEX candidate_cpf_rg_idx ON gcm_candidate.candidate (cpf, rg) WHERE ('cpf' IS NOT NULL, 'rg' IS NOT NULL) USING BTREE;
+CREATE UNIQUE INDEX candidate_cpf_rg_idx ON gcm_candidate.candidate (cpf, rg) WHERE ('cpf' IS NOT NULL AND 'rg' IS NOT NULL);

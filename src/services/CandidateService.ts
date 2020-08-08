@@ -9,6 +9,7 @@ import Validations from '../validators/Validations';
 import ErrorResponse from '../interfaces/ErrorResponse';
 import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
 import uuidV4 from '../utils/globals';
+import Commons from '../utils/Commons';
 
 class CandidateService {
 	candidateRepo: CandidateRepo;
@@ -21,11 +22,14 @@ class CandidateService {
 
 	validationHandlerFactory: ValidationHandlerFactory;
 
+	commons!: Commons;
+
 	constructor() {
 		this.candidateRepo = new CandidateRepo();
 		this.errorFactory = new ErrorFactory();
 		this.validators = new Validations();
 		this.validationHandlerFactory = new ValidationHandlerFactory();
+		this.commons = new Commons();
 	}
 
 	execCandidateTransactions = async (candidate: Candidate): Promise<any> => {
@@ -142,6 +146,7 @@ class CandidateService {
 			});
 
 			const validatedCandidate: Candidate = await this.validators.validateCandidates(candidate);
+			validatedCandidate.updatedDate = Commons.getLocaleDate();
 
 			return await this.candidateRepo.updateCandidate(validatedCandidate);
 		} catch (err) {

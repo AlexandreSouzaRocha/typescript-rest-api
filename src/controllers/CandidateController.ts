@@ -10,7 +10,6 @@ import Commons from '../utils/Commons';
 
 const candidateService: CandidateService = new CandidateService();
 const errorFactory: ErrorFactory = new ErrorFactory();
-const commons: Commons = new Commons();
 
 export const postCandidates = async (request: Request, response: Response): Promise<Response> => {
 	try {

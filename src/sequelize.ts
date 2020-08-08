@@ -1,5 +1,7 @@
 import { Sequelize } from 'sequelize';
 import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER } from './config';
+import logger from './utils/logger';
+import Commons from './utils/Commons';
 
 class Connection {
 	static instance: Connection;
@@ -39,10 +41,10 @@ class Connection {
 	}
 
 	getPassword() {
+		logger.info({ event: 'Connection.getPaassword' });
+
 		return new Promise((resolve) => {
-			setTimeout(() => {
-				resolve(DB_PASSWORD);
-			}, 1000);
+			resolve(Commons.getPassword());
 		});
 	}
 }
