@@ -39,5 +39,7 @@ module.exports = {
 		'import/prefer-default-export': ['off'],
 		'@typescript-eslint/import/prefer-default-export': ['off'],
 		'@typescript-eslint/explicit-module-boundary-types': 'off',
+		'no-useless-catch': 0,
+		'@typescript-eslint/no-useless-catch': 'off',
 	},
 };
