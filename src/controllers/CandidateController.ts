@@ -98,7 +98,7 @@ export const deleteByUniqueId = async (request: Request, response: Response): Pr
 
 export const putCandidates = async (request: Request, response: Response): Promise<Response> => {
 	try {
-		logger.info({ event: 'CandidateController.postCandidate' });
+		logger.info({ event: 'CandidateController.putCandidates' });
 
 		const { body } = request;
 		const candidate: CandidateDTO | undefined = await candidateService.updateCandidate(body);
@@ -106,7 +106,7 @@ export const putCandidates = async (request: Request, response: Response): Promi
 		return response.status(Constants.HTTPSTATUS.OK).json({ message: Constants.MESSAGE.CANDIDATE_UPDATED, candidate });
 	} catch (err) {
 		logger.error({
-			event: 'CandidateController.postCandidate',
+			event: 'CandidateController.putCandidates',
 			error: err.message,
 			statusCode: err.code || Constants.HTTPSTATUS.BAD_REQUEST,
 		});
