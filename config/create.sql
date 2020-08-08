@@ -12,8 +12,9 @@ CREATE TABLE gcm_candidate.candidate (
     phone_number VARCHAR (11) NOT NULL,
     scholling VARCHAR (128) NOT NULL,
     schol_name VARCHAR (128) NOT NULL,
-    enrollment_date TIMESTAMP (4) WITHOUT TIME ZONE NOT NULL,
     candidate_status VARCHAR (32) NOT NULL,
+    enrollment_date TIMESTAMP (4) WITHOUT TIME ZONE NOT NULL,
+    updated_date TIMESTAMP (4) WITHOUT TIME ZONE NULL,
 ) WITH (
     OIDS = false
 ) TABLESPACE pg_default;

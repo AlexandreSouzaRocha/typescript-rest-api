@@ -95,3 +95,24 @@ export const deleteByUniqueId = async (request: Request, response: Response): Pr
 			.json(errorFactory.getResponse(err || err.message));
 	}
 };
+
+export const putCandidates = async (request: Request, response: Response): Promise<Response> => {
+	try {
+		logger.info({ event: 'CandidateController.postCandidate' });
+
+		const { body } = request;
+		const candidate: CandidateDTO | undefined = await candidateService.updateCandidate(body);
+
+		return response.status(Constants.HTTPSTATUS.OK).json({ message: Constants.MESSAGE.CANDIDATE_UPDATED, candidate });
+	} catch (err) {
+		logger.error({
+			event: 'CandidateController.postCandidate',
+			error: err.message,
+			statusCode: err.code || Constants.HTTPSTATUS.BAD_REQUEST,
+		});
+
+		return response
+			.status(err.statusCode || Constants.HTTPSTATUS.BAD_REQUEST)
+			.json(errorFactory.getResponse(err || err.message));
+	}
+};

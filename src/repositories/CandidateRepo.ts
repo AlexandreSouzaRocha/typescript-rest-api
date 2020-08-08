@@ -186,7 +186,7 @@ class CandidateRepo {
 				schoolName,
 				schooling,
 				zipCode,
-				enrollmentDate,
+				updatedDate,
 			} = candidate;
 
 			const createdCandidate: CandidateDTO = new CandidateDTO({
@@ -204,7 +204,7 @@ class CandidateRepo {
 				schoolName,
 				schooling,
 				zipCode,
-				enrollmentDate,
+				updatedDate,
 			});
 			response = await createdCandidate.update(
 				{
@@ -222,7 +222,7 @@ class CandidateRepo {
 					schoolName,
 					schooling,
 					zipCode,
-					enrollmentDate,
+					updatedDate,
 				},
 				{
 					where: {
