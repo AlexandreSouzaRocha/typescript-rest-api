@@ -23,7 +23,7 @@ export const postCandidates = async (request: Request, response: Response): Prom
 		logger.error({
 			event: 'CandidateController.postCandidate',
 			error: err.message,
-			statusCode: err.code || Constants.HTTPSTATUS.BAD_REQUEST,
+			statusCode: err.statusCode || Constants.HTTPSTATUS.BAD_REQUEST,
 		});
 
 		return response

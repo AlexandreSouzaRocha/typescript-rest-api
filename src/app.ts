@@ -15,7 +15,7 @@ class App {
 	}
 
 	private routes(): void {
-		this.app.use('/v1', Routes);
+		this.app.use('/api/v1', Routes);
 	}
 
 	private middleware(): void {

@@ -7,6 +7,7 @@ import Constants from '../utils/constants';
 import uuidV4 from '../utils/globals';
 import ErrorResponse from '../interfaces/ErrorResponse';
 import CandidateFilters from '../interfaces/CandidateFilters';
+import Connection from '../sequelize';
 
 class CandidateRepo {
 	errorFactory: ErrorFactory;
@@ -15,9 +16,12 @@ class CandidateRepo {
 
 	validationHandlerFactory: ValidationHandlerFactory;
 
+	connection: Connection;
+
 	constructor() {
 		this.errorFactory = new ErrorFactory();
 		this.validationHandlerFactory = new ValidationHandlerFactory();
+		this.connection = Connection.getInstance();
 	}
 
 	saveCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
@@ -272,13 +276,16 @@ class CandidateRepo {
 	};
 
 	findAllHealthCheck = async (): Promise<CandidateDTO[]> => {
-		let candidates: CandidateDTO[] = [];
+		let candidates: {
+			count: number;
+			rows: CandidateDTO[];
+		} = { count: 0, rows: [] };
 		try {
-			candidates = await CandidateDTO.findAll();
+			candidates = await CandidateDTO.findAndCountAll();
 		} catch (err) {
 			logger.error({
 				event: 'CandidateRepo.deleteByUniqueId',
-				error: err.message,
+				error: err.stack,
 			});
 			this.errorResponse = {
 				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
@@ -288,7 +295,9 @@ class CandidateRepo {
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
-		return candidates;
+		logger.info({ event: 'CandidateRepo.findAllhealthCheck', totalCount: candidates.count });
+
+		return candidates.rows;
 	};
 }
 

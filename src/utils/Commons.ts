@@ -14,14 +14,12 @@ class Commons {
 		return moment(date).format(Constants.DATE_TIME.FORMAT);
 	}
 
-	static async getPassword() {
-		logger.info({ event: 'Commons.getPaassword' });
-
+	static getPassword() {
 		return new Promise((resolve) => {
-			setTimeout(async () => {
+			setTimeout(() => {
 				logger.info({ event: 'Commons.getPaassword', DB_PASSWORD });
 
-				await resolve(DB_PASSWORD);
+				resolve(DB_PASSWORD);
 			}, 1000);
 		});
 	}

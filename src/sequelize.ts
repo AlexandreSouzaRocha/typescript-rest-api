@@ -1,23 +1,17 @@
 import { Sequelize } from 'sequelize';
-import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER } from './config';
-import logger from './utils/logger';
-import Commons from './utils/Commons';
+import { DB_HOST, DB_NAME, DB_USER } from './config';
 
 class Connection {
 	static instance: Connection;
 
-	password: any;
+	constructor() {}
 
-	constructor() {
-		this.password = this.getPassword();
-	}
-
-	getConnection() {
+	async getConnection(password: string) {
 		return new Sequelize({
 			host: DB_HOST,
 			database: DB_NAME,
 			username: DB_USER,
-			password: DB_PASSWORD,
+			password,
 			dialect: 'postgres',
 			logging: false,
 			sync: {
@@ -38,14 +32,6 @@ class Connection {
 		}
 
 		return Connection.instance;
-	}
-
-	getPassword() {
-		logger.info({ event: 'Connection.getPaassword' });
-
-		return new Promise((resolve) => {
-			resolve(Commons.getPassword());
-		});
 	}
 }
 
