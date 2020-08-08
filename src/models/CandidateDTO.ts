@@ -1,7 +1,9 @@
 import { Model, DataTypes } from 'sequelize';
 
-import { sequelize } from '../sequelize';
+import Connection from '../sequelize';
 import Candidate from '../interfaces/Candidate';
+
+const connection: Connection = Connection.getInstance();
 
 class CandidateDTO extends Model<Candidate> implements Candidate {
 	id?: string | undefined;
@@ -112,7 +114,7 @@ CandidateDTO.init(
 		},
 	},
 	{
-		sequelize,
+		sequelize: connection.getConnection(),
 		modelName: 'CandidateDTO',
 	},
 );

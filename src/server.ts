@@ -1,11 +1,12 @@
 import app from './app';
 import { PORT } from './config';
-import sequelize from './sequelize';
-import { logger } from './utils/logger';
+import Connection from './sequelize';
+import logger from './utils/logger';
 
 (async () => {
 	try {
-		await sequelize.sync();
+		const connection: Connection = Connection.getInstance();
+		await connection.getConnection().sync();
 
 		logger.info({ event: '[DATABASE]', message: 'Connected on Postgres' });
 	} catch (err) {

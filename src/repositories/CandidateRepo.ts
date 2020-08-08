@@ -6,6 +6,7 @@ import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
 import Constants from '../utils/constants';
 import uuidV4 from '../utils/globals';
 import ErrorResponse from '../interfaces/ErrorResponse';
+import CandidateFilters from '../interfaces/CandidateFilters';
 
 class CandidateRepo {
 	errorFactory: ErrorFactory;
@@ -165,6 +166,109 @@ class CandidateRepo {
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
 		return candidate.id;
+	};
+
+	updateCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
+		let response: any;
+		try {
+			const {
+				address,
+				birthDate,
+				country,
+				cpf,
+				fatherName,
+				mobileNumber,
+				motherName,
+				name,
+				neighborhood,
+				phoneNumber,
+				rg,
+				schoolName,
+				schooling,
+				zipCode,
+				enrollmentDate,
+			} = candidate;
+
+			const createdCandidate: CandidateDTO = new CandidateDTO({
+				address,
+				birthDate,
+				country,
+				cpf,
+				fatherName,
+				motherName,
+				mobileNumber,
+				name,
+				neighborhood,
+				phoneNumber,
+				rg,
+				schoolName,
+				schooling,
+				zipCode,
+				enrollmentDate,
+			});
+			response = await createdCandidate.update(
+				{
+					address,
+					birthDate,
+					country,
+					cpf,
+					fatherName,
+					motherName,
+					mobileNumber,
+					name,
+					neighborhood,
+					phoneNumber,
+					rg,
+					schoolName,
+					schooling,
+					zipCode,
+					enrollmentDate,
+				},
+				{
+					where: {
+						cpf,
+						rg,
+					},
+				},
+			);
+
+			logger.info({
+				event: 'CandidateRepo.updateCandidate',
+				candidate: response,
+				message: 'Candidate updated.',
+			});
+		} catch (err) {
+			logger.error({
+				event: 'CandidateRepo.updateCandidate',
+				error: err.message,
+			});
+			this.errorResponse = {
+				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
+				requestId: uuidV4,
+				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
+				exceptionType: Constants.EXCEPTION.DATABASE,
+			};
+			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+		}
+		return response;
+	};
+
+	findAllByParameters = async (filters: CandidateFilters): Promise<CandidateDTO[] | undefined> => {
+		try {
+			return [];
+		} catch (err) {
+			logger.error({
+				event: 'CandidateRepo.updateCandidate',
+				error: err.message,
+			});
+			this.errorResponse = {
+				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
+				requestId: uuidV4,
+				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
+				exceptionType: Constants.EXCEPTION.DATABASE,
+			};
+			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+		}
 	};
 
 	findAllHealthCheck = async (): Promise<CandidateDTO[]> => {

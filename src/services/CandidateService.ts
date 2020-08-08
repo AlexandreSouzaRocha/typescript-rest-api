@@ -134,6 +134,26 @@ class CandidateService {
 		}
 	};
 
+	updateCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
+		try {
+			logger.info({
+				event: 'CandidateService.updateCandidate',
+				candidate,
+			});
+
+			const validatedCandidate: Candidate = await this.validators.validateCandidates(candidate);
+
+			return await this.candidateRepo.updateCandidate(validatedCandidate);
+		} catch (err) {
+			logger.error({
+				event: 'CandidateService.updateCandidate',
+				error: err.message,
+			});
+
+			throw err;
+		}
+	};
+
 	private saveCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
 		try {
 			logger.info({
