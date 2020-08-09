@@ -8,7 +8,7 @@ import Commons from './utils/Commons';
 
 (async () => {
 	try {
-		const password = await Commons.getPassword();
+		const password: any = await Commons.getPassword();
 		const connection: Sequelize = await Connection.getInstance().getConnection(String(password));
 		await connection.sync();
 

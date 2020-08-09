@@ -2,6 +2,7 @@ import { DataTypes } from 'sequelize';
 
 import CandidateDTO from './CandidateDTO';
 import Connection from '../sequelize';
+import { dbpassword } from '../utils/credentialsMiddleware';
 
 class CandidateInstance {
 	candidateDTO: CandidateDTO;
@@ -13,7 +14,7 @@ class CandidateInstance {
 		this.connection = Connection.getInstance();
 	}
 
-	initializeModel = async (password: string) => {
+	initializeModel = async () => {
 		CandidateDTO.init(
 			{
 				id: {
@@ -91,7 +92,7 @@ class CandidateInstance {
 				},
 			},
 			{
-				sequelize: await this.connection.getConnection(password),
+				sequelize: await this.connection.getConnection(dbpassword()),
 				modelName: 'CandidateDTO',
 				schema: 'gcm_candidate',
 				tableName: 'candidate',

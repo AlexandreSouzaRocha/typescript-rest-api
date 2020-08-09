@@ -21,6 +21,7 @@
   "homepage": "https://github.com/AlexandreSouzaRocha/gcm-candidate-api#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "cls-hooked": "^4.2.2",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -38,9 +39,11 @@
   "devDependencies": {
     "@types/bluebird": "^3.5.32",
     "@types/body-parser": "^1.19.0",
+    "@types/cls-hooked": "^4.3.1",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.7",
     "@types/joi": "^14.3.4",
+    "@types/node": "^14.0.27",
     "@types/uuid": "^8.0.0",
     "@types/validator": "^13.1.0",
     "@types/winston": "^2.4.4",

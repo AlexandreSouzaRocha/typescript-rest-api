@@ -33,7 +33,7 @@ export const getHealth = async (request: Request, response: Response): Promise<R
 		logger.error({
 			event: 'CandidateController.getCandidateByUniqueId',
 			error: err.message,
-			statusCode: err.code || Constants.HTTPSTATUS.BAD_REQUEST,
+			statusCode: err.statusCode || Constants.HTTPSTATUS.BAD_REQUEST,
 		});
 
 		const healthCheckError: any = {

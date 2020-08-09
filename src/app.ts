@@ -2,6 +2,7 @@ import express from 'express';
 import * as bodyParser from 'body-parser';
 import cors from 'cors';
 
+import * as credentialsMiddleware from './utils/credentialsMiddleware';
 import Routes from './routes/routes';
 
 class App {
@@ -20,6 +21,7 @@ class App {
 
 	private middleware(): void {
 		this.app.use(cors());
+		this.app.use(credentialsMiddleware.expressMiddleware());
 	}
 
 	private bodyParser(): void {

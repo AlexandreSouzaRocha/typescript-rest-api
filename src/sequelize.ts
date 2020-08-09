@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize';
 import { DB_HOST, DB_NAME, DB_USER } from './config';
+import { dbpassword } from './utils/credentialsMiddleware';
 
 class Connection {
 	static instance: Connection;
@@ -30,7 +31,6 @@ class Connection {
 		if (!Connection.instance) {
 			Connection.instance = new Connection();
 		}
-
 		return Connection.instance;
 	}
 }
