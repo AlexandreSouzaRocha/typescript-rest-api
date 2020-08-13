@@ -1,13 +1,12 @@
-import { Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 import { DB_HOST, DB_NAME, DB_USER } from './config';
-import { dbpassword } from './utils/credentialsMiddleware';
 
 class Connection {
 	static instance: Connection;
 
 	constructor() {}
 
-	async getConnection(password: string) {
+	getConnection(password: string) {
 		return new Sequelize({
 			host: DB_HOST,
 			database: DB_NAME,

@@ -8,6 +8,7 @@ import uuidV4 from '../utils/globals';
 import ErrorResponse from '../interfaces/ErrorResponse';
 import CandidateFilters from '../interfaces/CandidateFilters';
 import Connection from '../sequelize';
+import { dbpassword } from '../utils/credentialsMiddleware';
 
 class CandidateRepo {
 	errorFactory: ErrorFactory;
@@ -27,6 +28,7 @@ class CandidateRepo {
 	saveCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
 		let response: any;
 		try {
+			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
 			const {
 				address,
 				birthDate,
@@ -91,6 +93,7 @@ class CandidateRepo {
 	findOneByCpf = async (cpf: string): Promise<CandidateDTO | null | undefined> => {
 		let candidate: CandidateDTO | null = null;
 		try {
+			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
 			candidate = await CandidateDTO.findOne({
 				where: {
 					cpf,
@@ -121,6 +124,7 @@ class CandidateRepo {
 	finOneByUniqueId = async (uinqueId: string): Promise<CandidateDTO | null | undefined> => {
 		let candidate: CandidateDTO | null = null;
 		try {
+			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
 			candidate = await CandidateDTO.findOne({
 				where: {
 					id: uinqueId,
@@ -150,9 +154,9 @@ class CandidateRepo {
 	};
 
 	deleteByUniqueId = async (candidate: CandidateDTO): Promise<string | undefined> => {
+		logger.info({ event: 'CandidateRepo.deleteByUniqueId' });
 		try {
-			logger.info({ event: 'CandidateRepo.deleteByUniqueId' });
-
+			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
 			await candidate.update({
 				candidateStatus: Constants.CANDIDATE.STATUS.DELETED,
 			});
@@ -175,6 +179,7 @@ class CandidateRepo {
 	updateCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
 		let response: any;
 		try {
+			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
 			const {
 				address,
 				birthDate,
@@ -259,6 +264,7 @@ class CandidateRepo {
 
 	findAllByParameters = async (filters: CandidateFilters): Promise<CandidateDTO[] | undefined> => {
 		try {
+			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
 			return [];
 		} catch (err) {
 			logger.error({

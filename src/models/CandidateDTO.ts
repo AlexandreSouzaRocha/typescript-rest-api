@@ -1,132 +1,62 @@
-import { Model, DataTypes, Sequelize } from 'sequelize';
+import { Model, DataType, Column, Table } from 'sequelize-typescript';
 
-import Connection from '../sequelize';
 import Candidate from '../interfaces/Candidate';
-import logger from '../utils/logger';
-import { dbpassword } from '../utils/credentialsMiddleware';
 
+@Table({ modelName: 'CandidateDTO', tableName: 'candidate', schema: 'gcm_candidate' })
 class CandidateDTO extends Model<CandidateDTO> implements Candidate {
+	@Column({ type: DataType.STRING(64), primaryKey: true, field: 'id' })
 	id?: string | undefined;
 
+	@Column({ type: DataType.STRING(128), field: 'candidate_name' })
 	name!: string;
 
+	@Column({ type: DataType.STRING(32), field: 'birth_date' })
 	birthDate!: string;
 
+	@Column({ type: DataType.STRING(16), field: 'rg' })
 	rg!: string;
 
+	@Column({ type: DataType.STRING(32), field: 'cpf' })
 	cpf!: string;
 
+	@Column({ type: DataType.STRING(128), field: 'mother_name' })
 	motherName!: string;
 
+	@Column({ type: DataType.STRING(128), field: 'father_name' })
 	fatherName!: string;
 
+	@Column({ type: DataType.STRING(128), field: 'address' })
 	address!: string;
 
+	@Column({ type: DataType.STRING(128), field: 'neighborhood' })
 	neighborhood!: string;
 
+	@Column({ type: DataType.STRING(8), field: 'zip_code' })
 	zipCode!: string;
 
+	@Column({ type: DataType.STRING(128), field: 'country' })
 	country!: string;
 
+	@Column({ type: DataType.STRING(11), field: 'mobile_number' })
 	mobileNumber!: string;
 
+	@Column({ type: DataType.STRING(11), field: 'phone_number' })
 	phoneNumber!: string;
 
+	@Column({ type: DataType.STRING(128), field: 'schooling' })
 	schooling!: string;
 
+	@Column({ type: DataType.STRING(128), field: 'school_name' })
 	schoolName!: string;
 
+	@Column({ type: DataType.STRING(32), field: 'enrollment_date' })
 	enrollmentDate!: string;
 
+	@Column({ type: DataType.STRING(32), field: 'updated_date' })
 	updatedDate?: string;
 
+	@Column({ type: DataType.STRING(32), field: 'candidate_status' })
 	candidateStatus!: string;
 }
 
 export default CandidateDTO;
-
-(async () => {
-	CandidateDTO.init(
-		{
-			id: {
-				type: DataTypes.STRING(64),
-				primaryKey: true,
-				field: 'id',
-			},
-			name: {
-				type: DataTypes.STRING(128),
-				field: 'candidate_name',
-			},
-			birthDate: {
-				type: DataTypes.STRING(32),
-				field: 'birth_date',
-			},
-			rg: {
-				type: DataTypes.STRING(16),
-				field: 'rg',
-			},
-			cpf: {
-				type: DataTypes.STRING(32),
-				field: 'cpf',
-			},
-			motherName: {
-				type: DataTypes.STRING(128),
-				field: 'mother_name',
-			},
-			fatherName: {
-				type: DataTypes.STRING(128),
-				field: 'father_name',
-			},
-			address: {
-				type: DataTypes.STRING(128),
-				field: 'father_name',
-			},
-			neighborhood: {
-				type: DataTypes.STRING(128),
-				field: 'neighborhood',
-			},
-			zipCode: {
-				type: DataTypes.STRING(8),
-				field: 'zip_code',
-			},
-			country: {
-				type: DataTypes.STRING(128),
-				field: 'country',
-			},
-			mobileNumber: {
-				type: DataTypes.STRING(11),
-				field: 'mobile_number',
-			},
-			phoneNumber: {
-				type: DataTypes.STRING(11),
-				field: 'phone_number',
-			},
-			schooling: {
-				type: DataTypes.STRING(128),
-				field: 'schooling',
-			},
-			schoolName: {
-				type: DataTypes.STRING(128),
-				field: 'school_name',
-			},
-			enrollmentDate: {
-				type: DataTypes.STRING(32),
-				field: 'enrollment_date',
-			},
-			updatedDate: {
-				type: DataTypes.STRING(32),
-				field: 'updated_date',
-			},
-			candidateStatus: {
-				type: DataTypes.STRING(32),
-				field: 'candidate_status',
-			},
-		},
-		{
-			sequelize: await Connection.getInstance().getConnection(dbpassword()),
-			modelName: 'CandidateDTO',
-			schema: 'gcm_candidate',
-			tableName: 'candidate',
-		},
-	);
-})();
