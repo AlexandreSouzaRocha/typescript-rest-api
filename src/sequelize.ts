@@ -13,6 +13,7 @@ class Connection {
 			username: DB_USER,
 			password,
 			dialect: 'postgres',
+			models: [`${__dirname}/models`],
 			logging: false,
 			sync: {
 				force: false,

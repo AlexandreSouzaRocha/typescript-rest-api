@@ -6,7 +6,7 @@ import logger from '../utils/logger';
 import ErrorFactory from '../errors/ErrorFactory';
 import ErrorResponse from '../interfaces/ErrorResponse';
 import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
-import uuidV4 from '../utils/globals';
+import { requestId } from '../utils/generateRequestId';
 
 class Validations {
 	errorFactory: ErrorFactory;
@@ -108,7 +108,7 @@ class Validations {
 			this.errorResponse = {
 				message: err.details,
 				statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
-				requestId: uuidV4,
+				requestId: requestId(),
 				exceptionType: Constants.EXCEPTION.VALIDATION,
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
@@ -125,7 +125,7 @@ class Validations {
 				message: Constants.MESSAGE.INVALID.UNIQUE_ID.replace('{}', uniqueId),
 				statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
 				exceptionType: Constants.EXCEPTION.VALIDATION,
-				requestId: uuidV4,
+				requestId: requestId(),
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
@@ -141,7 +141,7 @@ class Validations {
 				message: Constants.MESSAGE.INVALID.CPF,
 				statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
 				exceptionType: Constants.EXCEPTION.VALIDATION,
-				requestId: uuidV4,
+				requestId: requestId(),
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}

@@ -1,12 +1,12 @@
 import * as winston from 'winston';
-import uuidV4 from './globals';
+import { requestId } from './generateRequestId';
 
 const { createLogger, format, transports } = winston;
 const { combine, timestamp, printf, json } = format;
 
 const customFormat = printf((info) => {
 	const message = {
-		uuidV4,
+		uuid: requestId(),
 		message: info.message,
 		level: info.level,
 		timestamp: info.timestamp,

@@ -4,7 +4,7 @@ import Candidate from '../interfaces/Candidate';
 import ErrorFactory from '../errors/ErrorFactory';
 import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
 import Constants from '../utils/constants';
-import uuidV4 from '../utils/globals';
+import { requestId } from '../utils/generateRequestId';
 import ErrorResponse from '../interfaces/ErrorResponse';
 import CandidateFilters from '../interfaces/CandidateFilters';
 import Connection from '../sequelize';
@@ -65,7 +65,7 @@ class CandidateRepo {
 				enrollmentDate,
 			});
 			createdCandidate.addHook('beforeCreate', (attribute: CandidateDTO) => {
-				attribute.id = uuidV4;
+				attribute.id = requestId();
 			});
 			response = await createdCandidate.save();
 
@@ -81,7 +81,7 @@ class CandidateRepo {
 			});
 			this.errorResponse = {
 				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
-				requestId: uuidV4,
+				requestId: requestId(),
 				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
 				exceptionType: Constants.EXCEPTION.DATABASE,
 			};
@@ -113,7 +113,7 @@ class CandidateRepo {
 			this.errorResponse = {
 				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
 				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
-				requestId: uuidV4,
+				requestId: requestId(),
 				exceptionType: Constants.EXCEPTION.DATABASE,
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
@@ -144,7 +144,7 @@ class CandidateRepo {
 			});
 			this.errorResponse = {
 				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
-				requestId: uuidV4,
+				requestId: requestId(),
 				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
 				exceptionType: Constants.EXCEPTION.DATABASE,
 			};
@@ -167,7 +167,7 @@ class CandidateRepo {
 			});
 			this.errorResponse = {
 				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
-				requestId: uuidV4,
+				requestId: requestId(),
 				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
 				exceptionType: Constants.EXCEPTION.DATABASE,
 			};
@@ -253,7 +253,7 @@ class CandidateRepo {
 			});
 			this.errorResponse = {
 				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
-				requestId: uuidV4,
+				requestId: requestId(),
 				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
 				exceptionType: Constants.EXCEPTION.DATABASE,
 			};
@@ -273,7 +273,7 @@ class CandidateRepo {
 			});
 			this.errorResponse = {
 				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
-				requestId: uuidV4,
+				requestId: requestId(),
 				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
 				exceptionType: Constants.EXCEPTION.DATABASE,
 			};
@@ -287,6 +287,7 @@ class CandidateRepo {
 			rows: CandidateDTO[];
 		} = { count: 0, rows: [] };
 		try {
+			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
 			candidates = await CandidateDTO.findAndCountAll();
 		} catch (err) {
 			logger.error({
@@ -295,7 +296,7 @@ class CandidateRepo {
 			});
 			this.errorResponse = {
 				message: Constants.MESSAGE.DEFUALT.DATABASE_ERROR,
-				requestId: uuidV4,
+				requestId: requestId(),
 				statusCode: Constants.HTTPSTATUS.INTERNAL_SERVER_ERROR,
 				exceptionType: Constants.EXCEPTION.DATABASE,
 			};

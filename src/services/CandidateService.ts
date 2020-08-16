@@ -8,7 +8,7 @@ import Constants from '../utils/constants';
 import Validations from '../validators/Validations';
 import ErrorResponse from '../interfaces/ErrorResponse';
 import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
-import uuidV4 from '../utils/globals';
+import { requestId } from '../utils/generateRequestId';
 import Commons from '../utils/Commons';
 
 class CandidateService {
@@ -72,7 +72,7 @@ class CandidateService {
 				this.errorResponse = {
 					message,
 					statusCode: Constants.HTTPSTATUS.NOT_FOUND,
-					requestId: uuidV4,
+					requestId: requestId(),
 					exceptionType: Constants.EXCEPTION.CANDIDATE,
 				};
 				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
@@ -108,7 +108,7 @@ class CandidateService {
 				this.errorResponse = {
 					message,
 					statusCode: Constants.HTTPSTATUS.NOT_FOUND,
-					requestId: uuidV4,
+					requestId: requestId(),
 					exceptionType: Constants.EXCEPTION.CANDIDATE,
 				};
 				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
@@ -194,7 +194,7 @@ class CandidateService {
 					message: Constants.MESSAGE.CANDIDATE_EXISTS,
 					statusCode: Constants.HTTPSTATUS.CONFLICT,
 					exceptionType: Constants.EXCEPTION.CANDIDATE_EXISTS,
-					requestId: uuidV4,
+					requestId: requestId(),
 				};
 				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 			}
@@ -222,7 +222,7 @@ class CandidateService {
 				this.errorResponse = {
 					message: Constants.MESSAGE.CANDIDATE_NOT_FOUND.replace('{}', uniqueId),
 					statusCode: Constants.HTTPSTATUS.NOT_FOUND,
-					requestId: uuidV4,
+					requestId: requestId(),
 					exceptionType: Constants.EXCEPTION.CANDIDATE,
 				};
 				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
@@ -235,7 +235,7 @@ class CandidateService {
 				this.errorResponse = {
 					message: Constants.MESSAGE.CANDIDATE_ALREADY_DELETED.replace('{}', uniqueId),
 					statusCode: Constants.HTTPSTATUS.CONFLICT,
-					requestId: uuidV4,
+					requestId: requestId(),
 					exceptionType: Constants.EXCEPTION.CANDIDATE,
 				};
 				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);

@@ -1,4 +1,4 @@
-import uuidV4 from '../utils/globals';
+import { requestId } from '../utils/generateRequestId';
 import ErrorHandlerFactory from '../factories/ErrorHandlerFactory';
 import ErrorResponse from '../interfaces/ErrorResponse';
 import logger from '../utils/logger';
@@ -25,7 +25,7 @@ class ErrorFactory {
 			this.errorResponse = {
 				message: messages,
 				statusCode: err.statusCode || Constants.HTTPSTATUS.BAD_REQUEST,
-				requestId: err.requestId || uuidV4,
+				requestId: err.requestId || requestId(),
 				exceptionType: err.exceptionType,
 			};
 			return this.errorResponse;
@@ -33,7 +33,7 @@ class ErrorFactory {
 		this.errorResponse = {
 			message: err.message,
 			statusCode: err.statusCode || Constants.HTTPSTATUS.BAD_REQUEST,
-			requestId: err.requestId || uuidV4,
+			requestId: err.requestId || requestId(),
 			exceptionType: err.exceptionType,
 		};
 

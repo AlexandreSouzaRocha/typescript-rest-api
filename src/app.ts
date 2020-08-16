@@ -3,6 +3,7 @@ import * as bodyParser from 'body-parser';
 import cors from 'cors';
 
 import * as credentialsMiddleware from './utils/credentialsMiddleware';
+import * as generateRequestId from './utils/generateRequestId';
 import Routes from './routes/routes';
 
 class App {
@@ -21,6 +22,7 @@ class App {
 
 	private middleware(): void {
 		this.app.use(cors());
+		this.app.use(generateRequestId.expressMiddleware());
 		this.app.use(credentialsMiddleware.expressMiddleware());
 	}
 

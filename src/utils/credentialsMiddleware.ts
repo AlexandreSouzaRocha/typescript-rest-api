@@ -1,11 +1,12 @@
 import * as cls from 'cls-hooked';
+import * as uuid from 'uuid';
 
 import logger from './logger';
 import Commons from './Commons';
 import Constants from './constants';
-import uuidV4 from './globals';
+import * as generateRequestId from './generateRequestId';
 
-const nsId = `gcm:${uuidV4}`;
+const nsId = `gcm:${uuid.v4()}`;
 const ns = cls.createNamespace(nsId);
 
 export const expressMiddleware = () => {
@@ -17,11 +18,11 @@ export const expressMiddleware = () => {
 
 			logger.info({ event: 'credentialsMiddleware.password' });
 		} catch (err) {
-			logger.error({ event: 'extractCredentials()', err: err.message, uuid: uuidV4 });
+			logger.error({ event: 'extractCredentials()', err: err.message });
 
 			return res
 				.status(Constants.HTTPSTATUS.UNAUTHORIZED)
-				.send({ message: Constants.MESSAGE.DEFUALT.BAD_REQUEST, uuid: uuidV4 });
+				.send({ message: Constants.MESSAGE.DEFUALT.BAD_REQUEST, uuid: generateRequestId.requestId() });
 		}
 
 		ns.run(() => {
