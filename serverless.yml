@@ -1,0 +1,48 @@
+service:
+  name: aws-candidate-api
+
+frameworkVersion: '>=1.0.0<2.0.0'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: v1
+  region: us-east-1
+  timeout: 30
+  memorySize: 512
+  package:
+    excludeDevDependencies: true
+    exclude:
+      - .git/**
+      - .vscode/**
+
+functions:
+  app: 
+    handler: handler.run
+    memorySize: 512
+    description: Lambda function for Candidate API
+  events:
+    - http:
+        path: /api/v1/health
+        method: get
+    - http:
+        path: /api/v1/candidate/{uniqueId}
+        method: get
+    - http:
+        path: /api/v1/candidate/{uniqueId}
+        method: get
+    - http:
+        path: /api/v1/candidate
+        method: post
+    - http:
+        path: /api/v1/candidates
+        method: get
+    - http:
+        path: /api/v1/candidate/{uniqueId}
+        method: delete
+    - http:
+        path: /api/v1/candidate
+        method: put
+plugins:
+- serverless-offline
+- serverless-plugin-typescript

@@ -20,7 +20,7 @@ class Commons {
 				logger.info({ event: 'Commons.getPaassword', DB_PASSWORD });
 
 				resolve(DB_PASSWORD);
-			}, 1000);
+			}, 1);
 		});
 	}
 }
