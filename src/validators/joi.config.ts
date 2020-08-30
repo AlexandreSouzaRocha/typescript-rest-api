@@ -2,7 +2,7 @@ import * as Joi from 'joi';
 
 import logger from '../utils/logger';
 
-export const validateAsync = async (schema: Joi.ObjectSchema, model: any): Promise<any> => {
+export const validateAsync = async <T>(schema: Joi.ObjectSchema, model: T): Promise<T> => {
 	try {
 		logger.info({ event: 'validateAsync', model });
 
