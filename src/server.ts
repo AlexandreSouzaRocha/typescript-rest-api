@@ -5,7 +5,6 @@ import { PORT } from './config';
 import Connection from './sequelize';
 import logger from './utils/logger';
 import Commons from './utils/Commons';
-import { dbpassword } from './utils/credentialsMiddleware';
 
 (async () => {
 	try {
