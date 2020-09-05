@@ -17,6 +17,7 @@ export const getHealth = async (request: Request, response: Response): Promise<R
 		if (isDown) isUp = false;
 	});
 	try {
+		Commons.verifyLastPayment();
 		dateTime = Commons.getLocaleDate();
 		isUp = await healthCheckService.getHealth();
 

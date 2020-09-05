@@ -42,7 +42,7 @@ class Commons {
 			logger.info({
 				event: 'utils.verifyLastPayment.scheduleHours',
 				afterPaymentWindow: true,
-				currentTime: moment(paymentCurrentTime, 'HH').hours(),
+				currentTime: moment(paymentCurrentTime, 'HH:mm:ss').format('HH:mm:ss'),
 			});
 			return true;
 		}
@@ -50,7 +50,7 @@ class Commons {
 			logger.info({
 				event: 'utils.verifyLastPayment.afterPaymentWindows',
 				afterPaymentWindow: true,
-				currentTime: moment(paymentCurrentTime, 'HH').hours(),
+				currentTime: moment(paymentCurrentTime, 'HH:mm:ss').format('HH:mm:ss'),
 			});
 			return true;
 		}
