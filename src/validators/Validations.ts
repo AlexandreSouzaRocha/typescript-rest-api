@@ -1,4 +1,5 @@
 import * as Joi from 'joi';
+import moment from 'moment';
 
 import Constants from '../utils/constants';
 import { validateAsync } from './joi.config';
@@ -144,6 +145,150 @@ class Validations {
 				requestId: requestId(),
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+		}
+	};
+
+	validateFilterableParams = async (filters: any, { ...query }): Promise<any> => {
+		try {
+			const { rg, cpf, enrollmentDate, schooling, candidateStatus, candidateName, page, limit } = filters;
+			Object.keys(query).forEach((param) => {
+				if (Constants.ALLOWED_FILTERS.includes(param)) {
+					logger.error({
+						event: 'Validations.validateFilterableParams',
+						message: Constants.MESSAGE.INVALID.FILTER.replace('{}', query[param]),
+					});
+
+					this.errorResponse = {
+						message: Constants.MESSAGE.INVALID.FILTER.replace('{}', query[param]),
+						statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
+						exceptionType: Constants.EXCEPTION.VALIDATION,
+						requestId: requestId(),
+					};
+					this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+				}
+			});
+
+			if (rg && !RegExp(Constants.REGEX.RG).test(rg)) {
+				logger.error({
+					event: 'Validations.validateFilterableParams',
+					message: Constants.MESSAGE.INVALID.RG,
+				});
+
+				this.errorResponse = {
+					message: Constants.MESSAGE.INVALID.RG,
+					statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
+					exceptionType: Constants.EXCEPTION.VALIDATION,
+					requestId: requestId(),
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+			}
+
+			if (cpf && !RegExp(Constants.REGEX.CPF).test(cpf)) {
+				logger.error({
+					event: 'Validations.validateFilterableParams',
+					message: Constants.MESSAGE.INVALID.CPF,
+				});
+
+				this.errorResponse = {
+					message: Constants.MESSAGE.INVALID.CPF,
+					statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
+					exceptionType: Constants.EXCEPTION.VALIDATION,
+					requestId: requestId(),
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+			}
+			if (enrollmentDate && !moment(enrollmentDate, Constants.DATE_TIME.FORMAT).isValid()) {
+				logger.error({
+					event: 'Validations.validateFilterableParams',
+					message: Constants.MESSAGE.INVALID.CPF,
+				});
+
+				this.errorResponse = {
+					message: Constants.MESSAGE.INVALID.ENROLLMENT_DATE,
+					statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
+					exceptionType: Constants.EXCEPTION.VALIDATION,
+					requestId: requestId(),
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+			}
+			if (schooling && !Constants.SCHOOLING_STATUS.includes(schooling)) {
+				logger.error({
+					event: 'Validations.validateFilterableParams',
+					message: Constants.MESSAGE.INVALID.SCHOOLING,
+				});
+
+				this.errorResponse = {
+					message: Constants.MESSAGE.INVALID.SCHOOLING,
+					statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
+					exceptionType: Constants.EXCEPTION.VALIDATION,
+					requestId: requestId(),
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+			}
+			if (candidateStatus && !['APPROVED', 'DISAPPROVED', 'DELETED'].includes(candidateStatus)) {
+				logger.error({
+					event: 'Validations.validateFilterableParams',
+					message: Constants.MESSAGE.INVALID.CANDIDATE_STATUS.replace('{}', candidateStatus),
+				});
+
+				this.errorResponse = {
+					message: Constants.MESSAGE.INVALID.SCHOOLING,
+					statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
+					exceptionType: Constants.EXCEPTION.VALIDATION,
+					requestId: requestId(),
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+			}
+			if (candidateName && !RegExp(Constants.REGEX.NAME).test(candidateName)) {
+				logger.error({
+					event: 'Validations.validateFilterableParams',
+					message: Constants.MESSAGE.INVALID.NAME.replace('{}', 'candidateName'),
+				});
+
+				this.errorResponse = {
+					message: Constants.MESSAGE.INVALID.NAME.replace('{}', 'candidateName'),
+					statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
+					exceptionType: Constants.EXCEPTION.VALIDATION,
+					requestId: requestId(),
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+			}
+			if (limit && !RegExp(Constants.REGEX.NUMBER).test(limit)) {
+				logger.error({
+					event: 'Validations.validateFilterableParams',
+					message: Constants.MESSAGE.INVALID.PAGEABLE_PARAM.replace('{}', 'limit'),
+				});
+
+				this.errorResponse = {
+					message: Constants.MESSAGE.INVALID.PAGEABLE_PARAM.replace('{}', 'limit'),
+					statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
+					exceptionType: Constants.EXCEPTION.VALIDATION,
+					requestId: requestId(),
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+			}
+			if (page && !RegExp(Constants.REGEX.NUMBER).test(page)) {
+				logger.error({
+					event: 'Validations.validateFilterableParams',
+					message: Constants.MESSAGE.INVALID.PAGEABLE_PARAM.replace('{}', 'page'),
+				});
+
+				this.errorResponse = {
+					message: Constants.MESSAGE.INVALID.PAGEABLE_PARAM.replace('{}', 'page'),
+					statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
+					exceptionType: Constants.EXCEPTION.VALIDATION,
+					requestId: requestId(),
+				};
+				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+			}
+
+			Object.keys(filters).forEach((filter) => typeof filter === 'undefined' && delete filters[filter]);
+
+			return filters;
+		} catch (err) {
+			logger.error({ event: 'Validations.validateFilterableParams', error: err.message });
+
+			throw err;
 		}
 	};
 }

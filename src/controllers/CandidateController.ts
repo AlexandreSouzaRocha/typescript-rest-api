@@ -7,6 +7,7 @@ import Candidate from '../interfaces/Candidate';
 import CandidateDTO from '../models/CandidateDTO';
 import ErrorFactory from '../errors/ErrorFactory';
 import Commons from '../utils/Commons';
+import CandidateFilters from '../interfaces/CandidateFilters';
 
 const candidateService: CandidateService = new CandidateService();
 const errorFactory: ErrorFactory = new ErrorFactory();
@@ -113,5 +114,26 @@ export const putCandidates = async (request: Request, response: Response): Promi
 		return response
 			.status(err.statusCode || Constants.HTTPSTATUS.BAD_REQUEST)
 			.json(errorFactory.getResponse(err || err.message));
+	}
+};
+
+export const getCandidatesByFilters = async (request: Request, response: Response): Promise<Response> => {
+	try {
+		logger.info({ event: 'CandidateController.getCandidatesByFilters', params: request.query });
+		/* const { query } = request;
+		const candidateFilters: CandidateFilters = await validators.validateFilters(query);
+		const items = await candidateService.findAllCandidatesByFilters(candidateFilters, query);
+
+		if (typeof items === 'object') return response.status(Constants.HTTPSTATUS.OK).json(items); */
+
+		return response.status(Constants.HTTPSTATUS.OK).json({});
+	} catch (err) {
+		logger.error({
+			event: 'CandidateController.getCandidatesByFilters',
+			erro: err.message,
+			statusCode: err.code || Constants.HTTPSTATUS.BAD_REQUEST,
+		});
+
+		return response.status(500).send({ error: err.stack });
 	}
 };

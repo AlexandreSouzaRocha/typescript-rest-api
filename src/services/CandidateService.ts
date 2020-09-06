@@ -10,6 +10,7 @@ import ErrorResponse from '../interfaces/ErrorResponse';
 import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
 import { requestId } from '../utils/generateRequestId';
 import Commons from '../utils/Commons';
+import CandidateFilters from '../interfaces/CandidateFilters';
 
 class CandidateService {
 	candidateRepo: CandidateRepo;
@@ -152,6 +153,69 @@ class CandidateService {
 		} catch (err) {
 			logger.error({
 				event: 'CandidateService.updateCandidate',
+				error: err.message,
+			});
+
+			throw err;
+		}
+	};
+
+	findAllCandidatesByFilters = async (candidateFilters: CandidateFilters, { ...query }): Promise<any> => {
+		const {
+			rg,
+			cpf,
+			candidateName,
+			candidateStatus,
+			enrollmentDate,
+			scholling,
+			uniqueId,
+			page,
+			limit,
+		} = candidateFilters;
+		const filterableParams: any = {};
+		const pageableParams: any = {};
+		filterableParams.rg = rg;
+		filterableParams.cpf = cpf;
+		filterableParams.candidateName = candidateName;
+		filterableParams.candidateStatus = candidateStatus;
+		filterableParams.enrollmentDate = enrollmentDate && Commons.getFormatedDate(enrollmentDate);
+		filterableParams.scholling = scholling;
+		filterableParams.uniqueId = uniqueId;
+		filterableParams.limit = limit && Number(limit) <= 20 ? limit : '20';
+		filterableParams.page = limit && Number(page) ? page : '0';
+
+		try {
+			const validatedFilters = await this.validators.validateFilterableParams(filterableParams, query);
+
+			pageableParams.limit = validatedFilters.limit;
+			pageableParams.page = validatedFilters.page;
+			pageableParams.offSet = Number(validatedFilters.limit) * Number(validatedFilters.page);
+
+			const candidatesList = await this.candidateRepo.findAllByParameters(filterableParams, pageableParams);
+
+			if (candidatesList && candidatesList.rows.length > 0) {
+				const totalPages: number = Math.ceil(candidatesList.count / Number(pageableParams.limit));
+				const nextPage: number =
+					Number(pageableParams.page) !== totalPages - 1 ? Number(pageableParams.page) + 1 : totalPages - 1;
+				const lastPage = !!(totalPages === Number(pageableParams.page));
+
+				return {
+					previousPage:
+						Number(pageableParams.page) === 0 ? Number(pageableParams.page) : Number(pageableParams.page) - 1,
+					currentPage: Number(pageableParams.page),
+					nextPage,
+					totalPages,
+					lastPage,
+					totalItems: candidatesList.count,
+					maxItemsPerPage: Number(pageableParams.limit),
+					totalItemsPerPage: candidatesList.rows.length,
+					items: candidatesList.rows,
+				};
+			}
+			return [];
+		} catch (err) {
+			logger.error({
+				event: 'CandidateService.saveCandidate',
 				error: err.message,
 			});
 

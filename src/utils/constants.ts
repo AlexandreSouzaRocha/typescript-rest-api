@@ -15,6 +15,8 @@ const Constants = {
 		ZIP_CODE: /^[0-9]{8,8}$/,
 		UUID: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
 		CPF: /^[0-9]{11,11}/,
+		RG: /^[0-9]{9,9}/,
+		NUMBER: /^[0-9]{1,14}/,
 	},
 	HTTPSTATUS: {
 		OK: 200,
@@ -41,6 +43,12 @@ const Constants = {
 			PHONE: 'The field {} is null or invalid. It only accepts a valid {} with MAx len of 11 characters.',
 			SCHOOLING: 'The field schooling is null or invalid. It only accepts COMPLETED or STUDYING',
 			UNIQUE_ID: 'The uniqueId {} is null or invalid. It only accepts a valid uniqueId.',
+			FILTER:
+				'The filter {} is invalid for query. It only accepts [cpf, rg, uniqueId, enrollmentDate, scholling, candidateStatus, candidateName, page, limit]',
+			ENROLLMENT_DATE: `The filter enrollmentDate is null or invalid. It only accepts a date on format YYYY-MM-DDThh:mm:ss`,
+			CANDIDATE_STATUS: 'The candidateStatus {} is null or invalid. It only accepts [APPROVED, DISAPPROVED or DELETED]',
+			PAGEABLE_PARAM:
+				'The param {} is null or invalid. It only accepts positives numbers greather than 0 with MAX len of 14 characters',
 		},
 		DEFUALT: {
 			BAD_REQUEST: 'The attributes of the request is null or invalid.',
@@ -71,6 +79,17 @@ const Constants = {
 		TIMEZONE: 'America/Sao_Paulo',
 		FORMAT: 'YYYY-MM-DDThh:mm:ss',
 	},
+	ALLOWED_FILTERS: [
+		'cpf',
+		'rg',
+		'uniqueId',
+		'enrollmentDate',
+		'scholling',
+		'candidateStatus',
+		'candidateName',
+		'page',
+		'limit',
+	],
 };
 
 export default Constants;

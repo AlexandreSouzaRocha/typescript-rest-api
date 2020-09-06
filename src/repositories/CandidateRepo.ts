@@ -1,3 +1,6 @@
+import { Op } from 'sequelize';
+import moment from 'moment';
+
 import CandidateDTO from '../models/CandidateDTO';
 import logger from '../utils/logger';
 import Candidate from '../interfaces/Candidate';
@@ -6,7 +9,6 @@ import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
 import Constants from '../utils/constants';
 import { requestId } from '../utils/generateRequestId';
 import ErrorResponse from '../interfaces/ErrorResponse';
-import CandidateFilters from '../interfaces/CandidateFilters';
 import Connection from '../sequelize';
 import { dbpassword } from '../utils/credentialsMiddleware';
 
@@ -262,10 +264,26 @@ class CandidateRepo {
 		return response;
 	};
 
-	findAllByParameters = async (filters: CandidateFilters): Promise<CandidateDTO[] | undefined> => {
+	findAllByParameters = async (filters: any, pageableParams: any): Promise<any> => {
 		try {
+			logger.info({ event: 'CandidateRepo.findAllByParameters', filters, pageableParams });
+
 			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
-			return [];
+
+			if (filters.enrollmenDate) {
+				filters.enrollmenDate = {
+					[Op.between]: [
+						moment(filters.enrollmenDate, Constants.DATE_TIME.FORMAT).format(Constants.DATE_TIME.FORMAT),
+						moment(filters.enrollmenDate, Constants.DATE_TIME.FORMAT).subtract(1, 'days'),
+					],
+				};
+			}
+			const candidatesList = await CandidateDTO.findAndCountAll({
+				where: filters,
+				limit: pageableParams.limit,
+				offset: pageableParams.offSet,
+			});
+			return candidatesList;
 		} catch (err) {
 			logger.error({
 				event: 'CandidateRepo.updateCandidate',
