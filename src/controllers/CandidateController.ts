@@ -8,9 +8,11 @@ import CandidateDTO from '../models/CandidateDTO';
 import ErrorFactory from '../errors/ErrorFactory';
 import Commons from '../utils/Commons';
 import CandidateFilters from '../interfaces/CandidateFilters';
+import Validations from '../validators/Validations';
 
 const candidateService: CandidateService = new CandidateService();
 const errorFactory: ErrorFactory = new ErrorFactory();
+const validators: Validations = new Validations();
 
 export const postCandidates = async (request: Request, response: Response): Promise<Response> => {
 	try {
@@ -120,11 +122,11 @@ export const putCandidates = async (request: Request, response: Response): Promi
 export const getCandidatesByFilters = async (request: Request, response: Response): Promise<Response> => {
 	try {
 		logger.info({ event: 'CandidateController.getCandidatesByFilters', params: request.query });
-		/* const { query } = request;
-		const candidateFilters: CandidateFilters = await validators.validateFilters(query);
+		const { query } = request;
+		const candidateFilters: CandidateFilters = await validators.validateFilterableParamsJoi(query);
 		const items = await candidateService.findAllCandidatesByFilters(candidateFilters, query);
 
-		if (typeof items === 'object') return response.status(Constants.HTTPSTATUS.OK).json(items); */
+		if (typeof items === 'object') return response.status(Constants.HTTPSTATUS.OK).json(items);
 
 		return response.status(Constants.HTTPSTATUS.OK).json({});
 	} catch (err) {

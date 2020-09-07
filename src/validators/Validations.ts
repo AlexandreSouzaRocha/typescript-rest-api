@@ -8,6 +8,7 @@ import ErrorFactory from '../errors/ErrorFactory';
 import ErrorResponse from '../interfaces/ErrorResponse';
 import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
 import { requestId } from '../utils/generateRequestId';
+import CandidateFilters from '../interfaces/CandidateFilters';
 
 class Validations {
 	errorFactory: ErrorFactory;
@@ -99,7 +100,6 @@ class Validations {
 						.strict()
 						.error(() => Constants.MESSAGE.INVALID.NAME.replace('{}', 'schoolName')),
 				});
-
 			return await validateAsync(schema, model);
 		} catch (err) {
 			logger.error({
@@ -143,6 +143,65 @@ class Validations {
 				statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
 				exceptionType: Constants.EXCEPTION.VALIDATION,
 				requestId: requestId(),
+			};
+			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+		}
+	};
+
+	validateFilterableParamsJoi = async (model: any): Promise<CandidateFilters | any> => {
+		try {
+			const { APPROVED, DELETED, DISAPPROVED } = Constants.CANDIDATE.STATUS;
+			const schema: Joi.ObjectSchema = Joi.object()
+				.options(Constants.JOI.CONFIG)
+				.keys({
+					name: Joi.string()
+						.regex(Constants.REGEX.NAME)
+						.max(128)
+						.min(1)
+						.strict()
+						.optional()
+						.error(() => Constants.MESSAGE.INVALID.NAME.replace('{}', 'name')),
+					rg: Joi.string()
+						.max(9)
+						.min(9)
+						.strict()
+						.optional()
+						.error(() => Constants.MESSAGE.INVALID.RG),
+					cpf: Joi.string()
+						.max(128)
+						.min(1)
+						.strict()
+						.optional()
+						.error(() => Constants.MESSAGE.INVALID.CPF),
+					schooling: Joi.string()
+						.only(Constants.SCHOOLING_STATUS)
+						.strict()
+						.optional()
+						.error(() => Constants.MESSAGE.INVALID.NAME.replace('{}', 'birthDate')),
+					enrollmentDate: Joi.date()
+						.iso()
+						.strict()
+						.optional()
+						.error(() => Constants.MESSAGE.INVALID.ENROLLMENT_DATE),
+					candidateStatus: Joi.string()
+						.only([APPROVED, DISAPPROVED, DELETED])
+						.strict()
+						.optional()
+						.error(() => Constants.MESSAGE.INVALID.ENROLLMENT_DATE),
+				});
+
+			return await validateAsync(schema, model);
+		} catch (err) {
+			logger.error({
+				event: 'Validations.validateFilterableParamsJoi',
+				error: err.message,
+			});
+
+			this.errorResponse = {
+				message: err.details,
+				statusCode: Constants.HTTPSTATUS.BAD_REQUEST,
+				requestId: requestId(),
+				exceptionType: Constants.EXCEPTION.VALIDATION,
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
