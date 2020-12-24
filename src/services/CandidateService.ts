@@ -3,7 +3,7 @@ import CandidateRepo from '../repositories/CandidateRepo';
 import Candidate from '../interfaces/Candidate';
 import logger from '../utils/logger';
 import ErrorFactory from '../errors/ErrorFactory';
-import CandidateDTO from '../models/CandidateDTO';
+import CandidateModel from '../models/Candidate.model';
 import Constants from '../utils/constants';
 import Validations from '../validators/Validations';
 import ErrorResponse from '../interfaces/ErrorResponse';
@@ -160,7 +160,10 @@ class CandidateService {
 		}
 	};
 
-	findAllCandidatesByFilters = async (candidateFilters: CandidateFilters, { ...query }): Promise<any> => {
+	findAllCandidatesByFilters = async (
+		candidateFilters: CandidateFilters,
+		{ ...query },
+	): Promise<any> => {
 		const {
 			rg,
 			cpf,
@@ -185,23 +188,33 @@ class CandidateService {
 		filterableParams.page = limit && Number(page) ? page : '0';
 
 		try {
-			const validatedFilters = await this.validators.validateFilterableParams(filterableParams, query);
+			const validatedFilters = await this.validators.validateFilterableParams(
+				filterableParams,
+				query,
+			);
 
 			pageableParams.limit = validatedFilters.limit;
 			pageableParams.page = validatedFilters.page;
 			pageableParams.offSet = Number(validatedFilters.limit) * Number(validatedFilters.page);
 
-			const candidatesList = await this.candidateRepo.findAllByParameters(filterableParams, pageableParams);
+			const candidatesList = await this.candidateRepo.findAllByParameters(
+				filterableParams,
+				pageableParams,
+			);
 
 			if (candidatesList && candidatesList.rows.length > 0) {
 				const totalPages: number = Math.ceil(candidatesList.count / Number(pageableParams.limit));
 				const nextPage: number =
-					Number(pageableParams.page) !== totalPages - 1 ? Number(pageableParams.page) + 1 : totalPages - 1;
+					Number(pageableParams.page) !== totalPages - 1
+						? Number(pageableParams.page) + 1
+						: totalPages - 1;
 				const lastPage = !!(totalPages === Number(pageableParams.page));
 
 				return {
 					previousPage:
-						Number(pageableParams.page) === 0 ? Number(pageableParams.page) : Number(pageableParams.page) - 1,
+						Number(pageableParams.page) === 0
+							? Number(pageableParams.page)
+							: Number(pageableParams.page) - 1,
 					currentPage: Number(pageableParams.page),
 					nextPage,
 					totalPages,

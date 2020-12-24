@@ -4,7 +4,7 @@ import CandidateService from '../services/CandidateService';
 import logger from '../utils/logger';
 import Constants from '../utils/constants';
 import Candidate from '../interfaces/Candidate';
-import CandidateDTO from '../models/CandidateDTO';
+import CandidateDTO from '../models/Candidate.model';
 import ErrorFactory from '../errors/ErrorFactory';
 import Commons from '../utils/Commons';
 import CandidateFilters from '../interfaces/CandidateFilters';
@@ -35,11 +35,17 @@ export const postCandidates = async (request: Request, response: Response): Prom
 	}
 };
 
-export const getCandidateByUniqueId = async (request: Request, response: Response): Promise<Response> => {
+export const getCandidateByUniqueId = async (
+	request: Request,
+	response: Response,
+): Promise<Response> => {
 	try {
 		const { uniqueId } = request.params;
 
-		const candidate: CandidateDTO | null | undefined = await candidateService.findCandidateByUniqueId(uniqueId);
+		const candidate:
+			| CandidateDTO
+			| null
+			| undefined = await candidateService.findCandidateByUniqueId(uniqueId);
 
 		return response.status(Constants.HTTPSTATUS.OK).json(candidate);
 	} catch (err) {
@@ -55,11 +61,16 @@ export const getCandidateByUniqueId = async (request: Request, response: Respons
 	}
 };
 
-export const getCandidateByCPf = async (request: Request, response: Response): Promise<Response> => {
+export const getCandidateByCPf = async (
+	request: Request,
+	response: Response,
+): Promise<Response> => {
 	try {
 		const { documentNumber }: any = request.headers;
 
-		const candidate: CandidateDTO | null | undefined = await candidateService.findCandidateByCpf(documentNumber);
+		const candidate: CandidateDTO | null | undefined = await candidateService.findCandidateByCpf(
+			documentNumber,
+		);
 
 		return response.status(Constants.HTTPSTATUS.OK).json(candidate);
 	} catch (err) {
@@ -105,7 +116,9 @@ export const putCandidates = async (request: Request, response: Response): Promi
 		const { body } = request;
 		const candidate: CandidateDTO | undefined = await candidateService.updateCandidate(body);
 
-		return response.status(Constants.HTTPSTATUS.OK).json({ message: Constants.MESSAGE.CANDIDATE_UPDATED, candidate });
+		return response
+			.status(Constants.HTTPSTATUS.OK)
+			.json({ message: Constants.MESSAGE.CANDIDATE_UPDATED, candidate });
 	} catch (err) {
 		logger.error({
 			event: 'CandidateController.putCandidates',
@@ -119,7 +132,10 @@ export const putCandidates = async (request: Request, response: Response): Promi
 	}
 };
 
-export const getCandidatesByFilters = async (request: Request, response: Response): Promise<Response> => {
+export const getCandidatesByFilters = async (
+	request: Request,
+	response: Response,
+): Promise<Response> => {
 	try {
 		logger.info({ event: 'CandidateController.getCandidatesByFilters', params: request.query });
 		const { query } = request;

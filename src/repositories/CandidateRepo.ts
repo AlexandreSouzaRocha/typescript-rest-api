@@ -1,7 +1,6 @@
-import { Op } from 'sequelize';
 import moment from 'moment';
 
-import CandidateDTO from '../models/CandidateDTO';
+import CandidateModel from '../models/Candidate.model';
 import logger from '../utils/logger';
 import Candidate from '../interfaces/Candidate';
 import ErrorFactory from '../errors/ErrorFactory';
@@ -19,18 +18,17 @@ class CandidateRepo {
 
 	validationHandlerFactory: ValidationHandlerFactory;
 
-	connection: Connection;
+	model: CandidateModel;
 
 	constructor() {
 		this.errorFactory = new ErrorFactory();
 		this.validationHandlerFactory = new ValidationHandlerFactory();
-		this.connection = Connection.getInstance();
+		this.model = new CandidateModel();
 	}
 
-	saveCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
+	saveCandidate = async (candidate: Candidate): Promise<Candidate> => {
 		let response: any;
 		try {
-			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
 			const {
 				address,
 				birthDate,
@@ -47,29 +45,29 @@ class CandidateRepo {
 				schooling,
 				zipCode,
 				enrollmentDate,
+				candidateStatus,
 			} = candidate;
 
-			const createdCandidate: CandidateDTO = new CandidateDTO({
+			const createdCandidate: any = {
 				address,
-				birthDate,
-				country,
-				cpf,
-				fatherName,
-				motherName,
-				mobileNumber,
-				name,
-				neighborhood,
-				phoneNumber,
+				candidate_name: name,
+				birth_date: birthDate,
 				rg,
-				schoolName,
+				cpf,
+				mother_name: motherName,
+				father_name: fatherName,
+				neighborhood,
+				zip_code: zipCode,
+				country,
+				mobile_number: mobileNumber,
+				phone_number: phoneNumber,
 				schooling,
-				zipCode,
-				enrollmentDate,
-			});
-			createdCandidate.addHook('beforeCreate', (attribute: CandidateDTO) => {
-				attribute.id = requestId();
-			});
-			response = await createdCandidate.save();
+				school_name: schoolName,
+				candidate_status: candidateStatus,
+				enrollment_date: enrollmentDate,
+			};
+
+			const [resonse]: any = await this.model.insertInto(createdCandidate);
 
 			logger.info({
 				event: 'CandidateRepo.saveCandidate',
@@ -89,13 +87,13 @@ class CandidateRepo {
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
-		return response;
+		return this.model.getResponse(response);
 	};
 
 	findOneByCpf = async (cpf: string): Promise<CandidateDTO | null | undefined> => {
 		let candidate: CandidateDTO | null = null;
 		try {
-			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
+			this.model.getConnection(dbpassword()).addModels([CandidateDTO]);
 			candidate = await CandidateDTO.findOne({
 				where: {
 					cpf,
@@ -126,7 +124,7 @@ class CandidateRepo {
 	finOneByUniqueId = async (uinqueId: string): Promise<CandidateDTO | null | undefined> => {
 		let candidate: CandidateDTO | null = null;
 		try {
-			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
+			this.model.getConnection(dbpassword()).addModels([CandidateDTO]);
 			candidate = await CandidateDTO.findOne({
 				where: {
 					id: uinqueId,
@@ -158,7 +156,7 @@ class CandidateRepo {
 	deleteByUniqueId = async (candidate: CandidateDTO): Promise<string | undefined> => {
 		logger.info({ event: 'CandidateRepo.deleteByUniqueId' });
 		try {
-			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
+			this.model.getConnection(dbpassword()).addModels([CandidateDTO]);
 			await candidate.update({
 				candidateStatus: Constants.CANDIDATE.STATUS.DELETED,
 			});
@@ -181,7 +179,7 @@ class CandidateRepo {
 	updateCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
 		let response: any;
 		try {
-			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
+			this.model.getConnection(dbpassword()).addModels([CandidateDTO]);
 			const {
 				address,
 				birthDate,
@@ -268,12 +266,14 @@ class CandidateRepo {
 		try {
 			logger.info({ event: 'CandidateRepo.findAllByParameters', filters, pageableParams });
 
-			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
+			this.model.getConnection(dbpassword()).addModels([CandidateDTO]);
 
 			if (filters.enrollmenDate) {
 				filters.enrollmenDate = {
 					[Op.between]: [
-						moment(filters.enrollmenDate, Constants.DATE_TIME.FORMAT).format(Constants.DATE_TIME.FORMAT),
+						moment(filters.enrollmenDate, Constants.DATE_TIME.FORMAT).format(
+							Constants.DATE_TIME.FORMAT,
+						),
 						moment(filters.enrollmenDate, Constants.DATE_TIME.FORMAT).subtract(1, 'days'),
 					],
 				};
@@ -305,7 +305,7 @@ class CandidateRepo {
 			rows: CandidateDTO[];
 		} = { count: 0, rows: [] };
 		try {
-			this.connection.getConnection(dbpassword()).addModels([CandidateDTO]);
+			this.model.getConnection(dbpassword()).addModels([CandidateDTO]);
 			candidates = await CandidateDTO.findAndCountAll();
 		} catch (err) {
 			logger.error({

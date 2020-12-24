@@ -7,6 +7,7 @@ CREATE TABLE gcm_candidate.candidate (
     mother_name VARCHAR (128) NOT NULL,
     father_name VARCHAR (128) NOT NULL,
     neighborhood VARCHAR (128) NOT NULL,
+    address VARCHAR (128) NOT NULL,
     zip_code VARCHAR (8) NOT NULL,
     country VARCHAR (128) NOT NULL,
     mobile_number VARCHAR (11) NOT NULL,
