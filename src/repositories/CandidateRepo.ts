@@ -8,7 +8,6 @@ import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
 import Constants from '../utils/constants';
 import { requestId } from '../utils/generateRequestId';
 import ErrorResponse from '../interfaces/ErrorResponse';
-import Connection from '../sequelize';
 import { dbpassword } from '../utils/credentialsMiddleware';
 
 class CandidateRepo {
@@ -26,8 +25,7 @@ class CandidateRepo {
 		this.model = new CandidateModel();
 	}
 
-	saveCandidate = async (candidate: Candidate): Promise<Candidate> => {
-		let response: any;
+	saveCandidate = async (candidate: Candidate): Promise<Candidate | undefined> => {
 		try {
 			const {
 				address,
@@ -67,13 +65,15 @@ class CandidateRepo {
 				enrollment_date: enrollmentDate,
 			};
 
-			const [resonse]: any = await this.model.insertInto(createdCandidate);
+			const [row]: any = await this.model.insertInto(createdCandidate);
 
 			logger.info({
 				event: 'CandidateRepo.saveCandidate',
-				candidate: response,
+				candidate: row,
 				message: 'Candidate saved.',
 			});
+
+			return this.model.getResponse(row);
 		} catch (err) {
 			logger.error({
 				event: 'CandidateRepo.saveCandidate',
@@ -87,24 +87,20 @@ class CandidateRepo {
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
-		return this.model.getResponse(response);
 	};
 
-	findOneByCpf = async (cpf: string): Promise<CandidateDTO | null | undefined> => {
-		let candidate: CandidateDTO | null = null;
+	findOneByCpf = async (cpf: string): Promise<Candidate | undefined> => {
 		try {
-			this.model.getConnection(dbpassword()).addModels([CandidateDTO]);
-			candidate = await CandidateDTO.findOne({
-				where: {
-					cpf,
-				},
-			});
+			const [row] = await this.model.findOne({ cpf }, '*');
+			const candidate: Candidate = this.model.getResponse(row);
 
 			logger.info({
 				event: 'CandidateRepo.finOneByCpf',
 				candidate,
 				message: 'Candidate returned.',
 			});
+
+			return candidate;
 		} catch (err) {
 			logger.error({
 				event: 'CandidateRepo.finOneByCpf',
@@ -118,22 +114,17 @@ class CandidateRepo {
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
-		return candidate;
 	};
 
-	finOneByUniqueId = async (uinqueId: string): Promise<CandidateDTO | null | undefined> => {
-		let candidate: CandidateDTO | null = null;
+	finOneByUniqueId = async (uniqueId: string): Promise<Candidate | undefined> => {
 		try {
-			this.model.getConnection(dbpassword()).addModels([CandidateDTO]);
-			candidate = await CandidateDTO.findOne({
-				where: {
-					id: uinqueId,
-				},
-			});
+			const [row] = await this.model.findOne({ request_id: uniqueId }, '*');
+			const candidate: Candidate = await this.model.getResponse(row);
 
 			logger.info({
 				event: 'CandidateRepo.finOneByUniqueId',
 				message: 'Candidate returned.',
+				candidate,
 			});
 
 			return candidate;
@@ -150,16 +141,24 @@ class CandidateRepo {
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
-		return candidate;
 	};
 
-	deleteByUniqueId = async (candidate: CandidateDTO): Promise<string | undefined> => {
+	deleteByUniqueId = async (candidate: Candidate): Promise<string | undefined> => {
 		logger.info({ event: 'CandidateRepo.deleteByUniqueId' });
 		try {
-			this.model.getConnection(dbpassword()).addModels([CandidateDTO]);
-			await candidate.update({
-				candidateStatus: Constants.CANDIDATE.STATUS.DELETED,
+			const [row] = await this.model.updateBy(
+				{ request_id: candidate.id },
+				{ candidate_status: Constants.CANDIDATE.STATUS.DELETED },
+			);
+			const { id } = this.model.getResponse(row);
+
+			logger.info({
+				event: 'CandidateRepo.finOneByUniqueId',
+				message: 'Candidate deleted.',
+				id,
 			});
+
+			return id;
 		} catch (err) {
 			logger.error({
 				event: 'CandidateRepo.deleteByUniqueId',
@@ -173,13 +172,10 @@ class CandidateRepo {
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
-		return candidate.id;
 	};
 
-	updateCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
-		let response: any;
+	updateCandidate = async (candidate: Candidate): Promise<Candidate | undefined> => {
 		try {
-			this.model.getConnection(dbpassword()).addModels([CandidateDTO]);
 			const {
 				address,
 				birthDate,
@@ -197,55 +193,33 @@ class CandidateRepo {
 				zipCode,
 				updatedDate,
 			} = candidate;
-
-			const createdCandidate: CandidateDTO = new CandidateDTO({
+			const updatedCandidate: any = {
 				address,
-				birthDate,
-				country,
-				cpf,
-				fatherName,
-				motherName,
-				mobileNumber,
-				name,
-				neighborhood,
-				phoneNumber,
+				candidate_name: name,
+				birth_date: birthDate,
 				rg,
-				schoolName,
+				cpf,
+				mother_name: motherName,
+				father_name: fatherName,
+				neighborhood,
+				zip_code: zipCode,
+				country,
+				mobile_number: mobileNumber,
+				phone_number: phoneNumber,
 				schooling,
-				zipCode,
-				updatedDate,
-			});
-			response = await createdCandidate.update(
-				{
-					address,
-					birthDate,
-					country,
-					cpf,
-					fatherName,
-					motherName,
-					mobileNumber,
-					name,
-					neighborhood,
-					phoneNumber,
-					rg,
-					schoolName,
-					schooling,
-					zipCode,
-					updatedDate,
-				},
-				{
-					where: {
-						cpf,
-						rg,
-					},
-				},
-			);
+				school_name: schoolName,
+				updated_date: updatedDate,
+			};
+			const [row] = await this.model.updateBy({ cpf, rg }, updatedCandidate);
+			const result: Candidate = this.model.getResponse(row);
 
 			logger.info({
 				event: 'CandidateRepo.updateCandidate',
-				candidate: response,
+				candidate: result,
 				message: 'Candidate updated.',
 			});
+
+			return result;
 		} catch (err) {
 			logger.error({
 				event: 'CandidateRepo.updateCandidate',
@@ -259,31 +233,35 @@ class CandidateRepo {
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
-		return response;
 	};
 
 	findAllByParameters = async (filters: any, pageableParams: any): Promise<any> => {
+		const params: any = {};
+		let whereBetween: any;
+		let from: string | undefined;
+		let to: string | undefined;
 		try {
 			logger.info({ event: 'CandidateRepo.findAllByParameters', filters, pageableParams });
-
-			this.model.getConnection(dbpassword()).addModels([CandidateDTO]);
-
-			if (filters.enrollmenDate) {
-				filters.enrollmenDate = {
-					[Op.between]: [
-						moment(filters.enrollmenDate, Constants.DATE_TIME.FORMAT).format(
-							Constants.DATE_TIME.FORMAT,
-						),
-						moment(filters.enrollmenDate, Constants.DATE_TIME.FORMAT).subtract(1, 'days'),
-					],
-				};
+			params.cpf = filters.cpf;
+			params.rg = filters.rg;
+			params.uniqueId = filters.uniqueId;
+			params.enrollment_date = filters.enrollmenDate;
+			params.schooling = filters.schooling;
+			params.candidate_name = filters.name;
+			params.candidate_status = filters.candidateStatus;
+			from = params.enrollment_date ? moment(filters.enrollmenDate).format(Constants.DATE_TIME.FORMAT) : undefined;
+			to = from ? moment(filters.enrollmenDate).subtract(1, 'days').format(Constants.DATE_TIME.FORMAT) : undefined;
+			Object.keys(params).forEach((key) => typeof key === undefined && delete params[key]);
+			if (from && to) {
+				whereBetween = {};
+				whereBetween.from = from;
+				whereBetween.to = to;
 			}
-			const candidatesList = await CandidateDTO.findAndCountAll({
-				where: filters,
-				limit: pageableParams.limit,
-				offset: pageableParams.offSet,
-			});
-			return candidatesList;
+			const rows: any[] = await this.model.findByFilterableParams(params, pageableParams, whereBetween);
+
+			logger.info({ event: 'CandidateRepo.updateCandidate', totalCount: rows.length });
+
+			return this.model.getResponseList(rows);
 		} catch (err) {
 			logger.error({
 				event: 'CandidateRepo.updateCandidate',

@@ -3,7 +3,7 @@ module.exports = {
   "trailingComma": "all",
   "useTabs": true,
   "tabWidth": 2,
-  "printWidth": 100,
+  "printWidth": 120,
   "overrides": [
     {
       "files": "*.ts",
