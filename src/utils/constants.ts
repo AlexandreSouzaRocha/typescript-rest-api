@@ -32,27 +32,21 @@ const Constants = {
 	SCHOOLING_STATUS: ['COMPLETED, STUDYING'],
 	MESSAGE: {
 		INVALID: {
-			NAME:
-				'The field {} is null or invalid. It only accepts a {} with MAX length of 128 characters.',
+			NAME: 'The field {} is null or invalid. It only accepts a {} with MAX length of 128 characters.',
 			DATE: 'The field {} is null or invalid. It only accepts a date on format YYYY-MM-DD.',
-			RG:
-				'The field rg is null or invalid. It only accepts a valid RG with MAX length of 9 characters.',
-			CPF:
-				'The field cpf is null or invalid. It only accepts a valid CPF with MAX length of 11 characters.',
-			ADDRESS:
-				'The field address is null or invalid. It only accepts a valid address with MAX len of 128 characters.',
+			RG: 'The field rg is null or invalid. It only accepts a valid RG with MAX length of 9 characters.',
+			CPF: 'The field cpf is null or invalid. It only accepts a valid CPF with MAX length of 11 characters.',
+			ADDRESS: 'The field address is null or invalid. It only accepts a valid address with MAX len of 128 characters.',
 			ZIP_CODE:
 				'The field zipCode is null or invalid. It only accepts a valid zipCode with MAX length of 8 characters.',
 			COUNTRY: 'The field country is null or invalid. It only accepts a existing country.',
-			PHONE:
-				'The field {} is null or invalid. It only accepts a valid {} with MAx len of 11 characters.',
+			PHONE: 'The field {} is null or invalid. It only accepts a valid {} with MAx len of 11 characters.',
 			SCHOOLING: 'The field schooling is null or invalid. It only accepts COMPLETED or STUDYING',
 			UNIQUE_ID: 'The uniqueId {} is null or invalid. It only accepts a valid uniqueId.',
 			FILTER:
 				'The filter {} is invalid for query. It only accepts [cpf, rg, uniqueId, enrollmentDate, scholling, candidateStatus, candidateName, page, limit]',
 			ENROLLMENT_DATE: `The filter enrollmentDate is null or invalid. It only accepts a date on format YYYY-MM-DDThh:mm:ss`,
-			CANDIDATE_STATUS:
-				'The candidateStatus {} is null or invalid. It only accepts [APPROVED, DISAPPROVED or DELETED]',
+			CANDIDATE_STATUS: 'The candidateStatus {} is null or invalid. It only accepts [APPROVED, DISAPPROVED or DELETED]',
 			PAGEABLE_PARAM:
 				'The param {} is null or invalid. It only accepts positives numbers greather than 0 with MAX len of 14 characters',
 		},

@@ -277,14 +277,10 @@ class CandidateRepo {
 		}
 	};
 
-	findAllHealthCheck = async (): Promise<CandidateDTO[]> => {
-		let candidates: {
-			count: number;
-			rows: CandidateDTO[];
-		} = { count: 0, rows: [] };
+	findAllHealthCheck = async (): Promise<Candidate[]> => {
+		let candidates: Candidate[] = [];
 		try {
-			this.model.getConnection(dbpassword()).addModels([CandidateDTO]);
-			candidates = await CandidateDTO.findAndCountAll();
+			candidates = await this.model.findAll('*');
 		} catch (err) {
 			logger.error({
 				event: 'CandidateRepo.deleteByUniqueId',
@@ -298,9 +294,9 @@ class CandidateRepo {
 			};
 			this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 		}
-		logger.info({ event: 'CandidateRepo.findAllhealthCheck', totalCount: candidates.count });
+		logger.info({ event: 'CandidateRepo.findAllhealthCheck', totalCount: candidates.length });
 
-		return candidates.rows;
+		return candidates;
 	};
 }
 

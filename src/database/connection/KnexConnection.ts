@@ -5,11 +5,13 @@ import {
 	DB_DEBUG,
 	DB_HOST,
 	DB_NAME,
-	DB_PASSWORD,
 	DB_USER,
 	DB_POOL_MIN,
 	DB_POOL_MAX,
 	DB_PORT,
+	DB_ACQUIRE_CONNECTION_TIMEOUT_MILLIS,
+	DB_CREATE_TIMEOUT_MILLIS,
+	DB_ACQUIRE_TIMEOUT_MILLIS,
 } from '../../config';
 
 class KnexConnection {
@@ -36,7 +38,10 @@ class KnexConnection {
 			pool: {
 				min: parseInt(DB_POOL_MIN, 10),
 				max: parseInt(DB_POOL_MAX, 10),
+				acquireTimeoutMillis: parseInt(DB_ACQUIRE_TIMEOUT_MILLIS, 10),
+				createTimeoutMillis: parseInt(DB_CREATE_TIMEOUT_MILLIS, 10),
 			},
+			acquireConnectionTimeout: parseInt(DB_ACQUIRE_CONNECTION_TIMEOUT_MILLIS, 10),
 		});
 	}
 }

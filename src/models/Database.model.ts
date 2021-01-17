@@ -16,7 +16,9 @@ class Model {
 	}
 
 	async findAll(select: any): Promise<any[]> {
-		return this.connection(this.table).withSchema(this.schema).select(select);
+		return this.connection(this.table)
+			.withSchema(this.schema)
+			.select(select || '*');
 	}
 
 	async findOne(where: any, select: any): Promise<any> {
@@ -34,11 +36,7 @@ class Model {
 	}
 
 	async updateBy(where: any, fields: any): Promise<any> {
-		return this.connection(this.table)
-			.withSchema(this.schema)
-			.update(fields)
-			.where(where)
-			.returning('*');
+		return this.connection(this.table).withSchema(this.schema).update(fields).where(where).returning('*');
 	}
 
 	async deleteAll(): Promise<any> {

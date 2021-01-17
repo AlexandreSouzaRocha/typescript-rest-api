@@ -10,4 +10,8 @@ export const { DB_DEBUG = 'on' } = process.env;
 export const { DB_POOL_MIN = '2' } = process.env;
 export const { DB_POOL_MAX = '5' } = process.env;
 export const { DB_PORT = '5432' } = process.env;
+export const { DB_ACQUIRE_TIMEOUT_MILLIS = '1000' } = process.env;
+export const { DB_CREATE_TIMEOUT_MILLIS = '1000' } = process.env;
+export const { DB_ACQUIRE_CONNECTION_TIMEOUT_MILLIS = '3000' } = process.env;
+
 export const { PORT = 3000 } = process.env;

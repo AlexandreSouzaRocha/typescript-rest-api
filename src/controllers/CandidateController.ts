@@ -35,17 +35,11 @@ export const postCandidates = async (request: Request, response: Response): Prom
 	}
 };
 
-export const getCandidateByUniqueId = async (
-	request: Request,
-	response: Response,
-): Promise<Response> => {
+export const getCandidateByUniqueId = async (request: Request, response: Response): Promise<Response> => {
 	try {
 		const { uniqueId } = request.params;
 
-		const candidate:
-			| CandidateDTO
-			| null
-			| undefined = await candidateService.findCandidateByUniqueId(uniqueId);
+		const candidate: Candidate | undefined = await candidateService.findCandidateByUniqueId(uniqueId);
 
 		return response.status(Constants.HTTPSTATUS.OK).json(candidate);
 	} catch (err) {
@@ -61,16 +55,11 @@ export const getCandidateByUniqueId = async (
 	}
 };
 
-export const getCandidateByCPf = async (
-	request: Request,
-	response: Response,
-): Promise<Response> => {
+export const getCandidateByCPf = async (request: Request, response: Response): Promise<Response> => {
 	try {
 		const { documentNumber }: any = request.headers;
 
-		const candidate: CandidateDTO | null | undefined = await candidateService.findCandidateByCpf(
-			documentNumber,
-		);
+		const candidate: Candidate | undefined = await candidateService.findCandidateByCpf(documentNumber);
 
 		return response.status(Constants.HTTPSTATUS.OK).json(candidate);
 	} catch (err) {
@@ -114,11 +103,9 @@ export const putCandidates = async (request: Request, response: Response): Promi
 		logger.info({ event: 'CandidateController.putCandidates' });
 
 		const { body } = request;
-		const candidate: CandidateDTO | undefined = await candidateService.updateCandidate(body);
+		const candidate: Candidate | undefined = await candidateService.updateCandidate(body);
 
-		return response
-			.status(Constants.HTTPSTATUS.OK)
-			.json({ message: Constants.MESSAGE.CANDIDATE_UPDATED, candidate });
+		return response.status(Constants.HTTPSTATUS.OK).json({ message: Constants.MESSAGE.CANDIDATE_UPDATED, candidate });
 	} catch (err) {
 		logger.error({
 			event: 'CandidateController.putCandidates',
@@ -132,10 +119,7 @@ export const putCandidates = async (request: Request, response: Response): Promi
 	}
 };
 
-export const getCandidatesByFilters = async (
-	request: Request,
-	response: Response,
-): Promise<Response> => {
+export const getCandidatesByFilters = async (request: Request, response: Response): Promise<Response> => {
 	try {
 		logger.info({ event: 'CandidateController.getCandidatesByFilters', params: request.query });
 		const { query } = request;

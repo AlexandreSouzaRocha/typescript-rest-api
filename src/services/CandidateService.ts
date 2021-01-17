@@ -53,8 +53,7 @@ class CandidateService {
 		}
 	};
 
-	findCandidateByUniqueId = async (uniqueId: string): Promise<CandidateDTO | null | undefined> => {
-		let candidate: CandidateDTO | null | undefined;
+	findCandidateByUniqueId = async (uniqueId: string): Promise<Candidate | undefined> => {
 		try {
 			logger.info({
 				event: 'CandidateService.findCandidateByUniqueId',
@@ -62,7 +61,7 @@ class CandidateService {
 			});
 
 			await this.validators.validateUniqueId(uniqueId);
-			candidate = await this.candidateRepo.finOneByUniqueId(uniqueId);
+			const candidate: Candidate | undefined = await this.candidateRepo.finOneByUniqueId(uniqueId);
 
 			if (!candidate) {
 				const message: string = Constants.MESSAGE.CANDIDATE_NOT_FOUND.replace('{}', uniqueId);
@@ -78,6 +77,7 @@ class CandidateService {
 				};
 				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 			}
+			return candidate;
 		} catch (err) {
 			logger.error({
 				event: 'CandidateService.findCandidateByUniqueId',
@@ -86,11 +86,9 @@ class CandidateService {
 
 			throw err;
 		}
-		return candidate;
 	};
 
-	findCandidateByCpf = async (documentNumber: string): Promise<CandidateDTO | null | undefined> => {
-		let candidate: CandidateDTO | null | undefined;
+	findCandidateByCpf = async (documentNumber: string): Promise<Candidate | undefined> => {
 		try {
 			logger.info({
 				event: 'CandidateService.findCandidateByUniqueId',
@@ -98,7 +96,7 @@ class CandidateService {
 			});
 
 			await this.validators.validateCpf(documentNumber);
-			candidate = await this.candidateRepo.findOneByCpf(documentNumber);
+			const candidate: Candidate | undefined = await this.candidateRepo.findOneByCpf(documentNumber);
 
 			if (!candidate) {
 				const message: string = Constants.MESSAGE.CANDIDATE_NOT_FOUND.replace('{}', documentNumber);
@@ -114,6 +112,7 @@ class CandidateService {
 				};
 				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
 			}
+			return candidate;
 		} catch (err) {
 			logger.error({
 				event: 'CandidateService.findCandidateByUniqueId',
@@ -122,7 +121,6 @@ class CandidateService {
 
 			throw err;
 		}
-		return candidate;
 	};
 
 	deleteByUniqueId = async (uniqueId: string): Promise<string | undefined> => {
@@ -139,7 +137,7 @@ class CandidateService {
 		}
 	};
 
-	updateCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
+	updateCandidate = async (candidate: Candidate): Promise<Candidate | undefined> => {
 		try {
 			logger.info({
 				event: 'CandidateService.updateCandidate',
@@ -160,10 +158,7 @@ class CandidateService {
 		}
 	};
 
-	findAllCandidatesByFilters = async (
-		candidateFilters: CandidateFilters,
-		{ ...query },
-	): Promise<any> => {
+	findAllCandidatesByFilters = async (candidateFilters: CandidateFilters, { ...query }): Promise<any> => {
 		const {
 			rg,
 			cpf,
@@ -188,33 +183,23 @@ class CandidateService {
 		filterableParams.page = limit && Number(page) ? page : '0';
 
 		try {
-			const validatedFilters = await this.validators.validateFilterableParams(
-				filterableParams,
-				query,
-			);
+			const validatedFilters = await this.validators.validateFilterableParams(filterableParams, query);
 
 			pageableParams.limit = validatedFilters.limit;
 			pageableParams.page = validatedFilters.page;
 			pageableParams.offSet = Number(validatedFilters.limit) * Number(validatedFilters.page);
 
-			const candidatesList = await this.candidateRepo.findAllByParameters(
-				filterableParams,
-				pageableParams,
-			);
+			const candidatesList = await this.candidateRepo.findAllByParameters(filterableParams, pageableParams);
 
 			if (candidatesList && candidatesList.rows.length > 0) {
 				const totalPages: number = Math.ceil(candidatesList.count / Number(pageableParams.limit));
 				const nextPage: number =
-					Number(pageableParams.page) !== totalPages - 1
-						? Number(pageableParams.page) + 1
-						: totalPages - 1;
+					Number(pageableParams.page) !== totalPages - 1 ? Number(pageableParams.page) + 1 : totalPages - 1;
 				const lastPage = !!(totalPages === Number(pageableParams.page));
 
 				return {
 					previousPage:
-						Number(pageableParams.page) === 0
-							? Number(pageableParams.page)
-							: Number(pageableParams.page) - 1,
+						Number(pageableParams.page) === 0 ? Number(pageableParams.page) : Number(pageableParams.page) - 1,
 					currentPage: Number(pageableParams.page),
 					nextPage,
 					totalPages,
@@ -236,7 +221,7 @@ class CandidateService {
 		}
 	};
 
-	private saveCandidate = async (candidate: Candidate): Promise<CandidateDTO | undefined> => {
+	private saveCandidate = async (candidate: Candidate): Promise<Candidate | undefined> => {
 		try {
 			logger.info({
 				event: 'CandidateService.saveCandidate',
@@ -258,9 +243,7 @@ class CandidateService {
 		try {
 			const validatedCandidate: Candidate = await this.validators.validateCandidates(candidate);
 
-			const candidateRepo: CandidateDTO | null | undefined = await this.candidateRepo.findOneByCpf(
-				validatedCandidate.cpf,
-			);
+			const candidateRepo: Candidate | undefined = await this.candidateRepo.findOneByCpf(validatedCandidate.cpf);
 
 			if (candidateRepo) {
 				logger.error({
@@ -287,7 +270,7 @@ class CandidateService {
 		}
 	};
 
-	private async validateDeletition(uniqueId: string): Promise<CandidateDTO | undefined> {
+	private async validateDeletition(uniqueId: string): Promise<Candidate | undefined> {
 		try {
 			const candidate: any = await this.candidateRepo.finOneByUniqueId(uniqueId);
 
