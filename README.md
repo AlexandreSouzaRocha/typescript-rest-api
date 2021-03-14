@@ -1,2 +1,2 @@
-# gcm-candidate-api
-GCM Candidate API Microservice
+# Typescript-candidate-api
+Typescript Rest API  for studies of TS and Serverless
