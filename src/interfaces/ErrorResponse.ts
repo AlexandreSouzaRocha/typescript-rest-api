@@ -1,5 +1,5 @@
 interface ErrorResponse {
-	message: string | string[];
+	message: string;
 	requestId: string;
 	statusCode: number;
 	exceptionType: string;

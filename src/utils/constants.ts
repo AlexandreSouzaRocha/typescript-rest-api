@@ -53,6 +53,7 @@ const Constants = {
 		DEFUALT: {
 			BAD_REQUEST: 'The attributes of the request is null or invalid.',
 			DATABASE_ERROR: 'Internal error while executing query on database.',
+			SERVER_ERROR: 'Internal server error while executing request.',
 		},
 		CANDIDATE_EXISTS: 'The candidate {} alredy exists.',
 		CANDIDATE_NOT_FOUND: 'The candidate {} was not found.',
@@ -65,6 +66,7 @@ const Constants = {
 		DATABASE: 'DataBaseException',
 		VALIDATION: 'ValidationException',
 		CANDIDATE_EXISTS: 'CandidateExistsException',
+		SERVER_ERROR: 'InternalServerErrorException',
 	},
 	JOI: {
 		CONFIG: {

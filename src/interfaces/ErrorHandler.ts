@@ -1,7 +1,9 @@
-import ErorrResponse from './ErrorResponse';
+import ErrorResponse from './ErrorResponse';
 
 interface ErrorHandler {
-	throwError(errorResponse: ErorrResponse): void;
+	throwError(error: Error | ErrorResponse): void;
+
+	getErrorResponse(error: Error | ErrorResponse): ErrorResponse;
 }
 
 export default ErrorHandler;

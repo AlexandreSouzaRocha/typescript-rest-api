@@ -1,31 +1,39 @@
-import Knex from 'knex';
-
-import KnexConnection from '../database/connection/KnexConnection';
+import { PoolClient } from 'pg';
 
 class Model {
 	schema: string;
 
 	table: string;
 
-	connection: Knex;
+	connection: PoolClient;
 
-	constructor(schema: string, table: string) {
+	constructor(schema: string, table: string, connection: PoolClient) {
 		this.schema = schema;
 		this.table = table;
-		this.connection = KnexConnection;
+		this.connection = connection;
 	}
 
-	async findAll(select: any): Promise<any[]> {
-		return this.connection(this.table)
-			.withSchema(this.schema)
-			.select(select || '*');
+	async findAll(where: any): Promise<any[]> {
+		const values = Object.values(where);
+		const keys = Object.keys(where);
+		const whereCondition = `${keys.map((value, index) => `${value} = $${index + 1}`).join(',')}`;
+		const query = ` SELECT * FROM ${this.schema}.${this.table} WHERE ${whereCondition}`;
+
+		const { rows } = await this.connection.query(query, values);
+
+		return rows;
 	}
 
 	async findOne(where: any, select: any): Promise<any> {
-		return this.connection(this.table)
-			.withSchema(this.schema)
-			.select(select || '*')
-			.first();
+		const values = Object.values(where);
+		const keys = Object.keys(where);
+		const whereCondition = `${keys.map((value, index) => `${value} = $${index + 1}`).join(',')}`;
+		const selectCondition = select ? Object.keys(select).join(',') : '*';
+		const query = `${selectCondition} ${whereCondition} LIMIT 1`;
+
+		const { rows } = await this.connection.query(query, values);
+
+		return rows[0];
 	}
 
 	async findBy(where: any, select: any): Promise<any[]> {

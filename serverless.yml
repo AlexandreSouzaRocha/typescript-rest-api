@@ -1,15 +1,15 @@
 service:
-  name: aws-candidate-api
+  name: aws-typescript-rest-api
 
-frameworkVersion: '>=1.0.0<2.0.0'
+frameworkVersion: '2.0.0'
 
 provider:
   name: aws
-  runtime: nodejs12.x
-  stage: v1
-  region: us-east-1
+  runtime: nodejs14.x
+  stage: ${opt.stage, 'api'}
+  region: ${opt.region, 'us-east-1'}
   timeout: 30
-  memorySize: 512
+  memorySize: 1024
   package:
     excludeDevDependencies: true
     exclude:
@@ -19,29 +19,29 @@ provider:
 functions:
   app: 
     handler: handler.run
-    memorySize: 512
-    description: Lambda function for Candidate API
+    memorySize: 1024
+    description: Lambda function for Typescript REST API
   events:
     - http:
-        path: /api/v1/health
+        path: /v1/health
         method: get
     - http:
-        path: /api/v1/candidate/{uniqueId}
+        path: /v1/candidate/{uniqueId}
         method: get
     - http:
-        path: /api/v1/candidate/{uniqueId}
+        path: /v1/candidate/{uniqueId}
         method: get
     - http:
-        path: /api/v1/candidate
+        path: /v1/candidate
         method: post
     - http:
-        path: /api/v1/candidates
+        path: /v1/candidates
         method: get
     - http:
-        path: /api/v1/candidate/{uniqueId}
+        path: /v1/candidate/{uniqueId}
         method: delete
     - http:
-        path: /api/v1/candidate
+        path: /v1/candidate
         method: put
 plugins:
 - serverless-offline
