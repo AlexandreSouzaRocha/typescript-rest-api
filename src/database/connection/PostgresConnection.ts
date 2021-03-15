@@ -1,5 +1,5 @@
 import { Pool, PoolClient } from 'pg';
-
+import logger from '../../utils/logger';
 import Commons from '../../utils/Commons';
 import {
 	DB_HOST,
@@ -20,6 +20,8 @@ class PostgresConnection {
 	}
 
 	static async createConnection(): Promise<PoolClient> {
+		logger.info({ event: 'PostgresConenection.createConnection' });
+
 		const pool: Pool = new Pool({
 			user: DB_USER,
 			database: DB_NAME,
@@ -33,6 +35,15 @@ class PostgresConnection {
 		});
 
 		return pool.connect();
+	}
+
+	static async closeConnection(connection: PoolClient): Promise<void> {
+		logger.info({ event: 'PostgresConnection.closeConnection' });
+		try {
+			await connection.release(true);
+		} finally {
+			logger.info({ event: 'PostgresConnection.closeConnection', message: 'CONNECTION CLOSED SUCCESSFULLY.' });
+		}
 	}
 }
 

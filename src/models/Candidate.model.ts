@@ -1,7 +1,7 @@
 import Candidate from '../interfaces/Candidate';
-import Model from './Database.model';
+import Model from './Base.model';
 
-const SCHEMA = 'gcm_candidate';
+const SCHEMA = 'typescript_api';
 const TABLE = 'candidate';
 
 class CandidateModel extends Model {

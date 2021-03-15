@@ -1,4 +1,7 @@
 const Constants = {
+	DATABASE: {
+		DEFAULT_CONDITION: '*',
+	},
 	EVENT: {
 		HEALTH_CHECK: 'HealthCheckEvent',
 	},
