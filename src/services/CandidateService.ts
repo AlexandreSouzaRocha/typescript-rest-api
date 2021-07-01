@@ -7,7 +7,6 @@ import CandidateModel from '../models/Candidate.model';
 import Constants from '../utils/constants';
 import Validations from '../validators/Validations';
 import ErrorResponse from '../interfaces/ErrorResponse';
-import ValidationHandlerFactory from '../factories/ValidationHandlerFactory';
 import { requestId } from '../utils/generateRequestId';
 import Commons from '../utils/Commons';
 import CandidateFilters from '../interfaces/CandidateFilters';
@@ -19,9 +18,7 @@ class CandidateService {
 
 	validators: Validations;
 
-	errorResponse!: ErrorResponse;
-
-	validationHandlerFactory: ValidationHandlerFactory;
+	errorResponse!: ErrorResponse; 
 
 	commons!: Commons;
 
@@ -29,7 +26,6 @@ class CandidateService {
 		this.candidateRepo = new CandidateRepo();
 		this.errorFactory = new ErrorFactory();
 		this.validators = new Validations();
-		this.validationHandlerFactory = new ValidationHandlerFactory();
 		this.commons = new Commons();
 	}
 
@@ -75,7 +71,7 @@ class CandidateService {
 					requestId: requestId(),
 					exceptionType: Constants.EXCEPTION.CANDIDATE,
 				};
-				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+				this.errorFactory.throwError(this.errorResponse);
 			}
 			return candidate;
 		} catch (err) {
@@ -110,7 +106,7 @@ class CandidateService {
 					requestId: requestId(),
 					exceptionType: Constants.EXCEPTION.CANDIDATE,
 				};
-				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+				this.errorFactory.throwError(this.errorResponse);
 			}
 			return candidate;
 		} catch (err) {
@@ -256,7 +252,7 @@ class CandidateService {
 					exceptionType: Constants.EXCEPTION.CANDIDATE_EXISTS,
 					requestId: requestId(),
 				};
-				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+				this.errorFactory.throwError(this.errorResponse);
 			}
 
 			return validatedCandidate;
@@ -285,7 +281,7 @@ class CandidateService {
 					requestId: requestId(),
 					exceptionType: Constants.EXCEPTION.CANDIDATE,
 				};
-				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+				this.errorFactory.throwError(this.errorResponse);
 			}
 			if (candidate.candidateStatus === Constants.CANDIDATE.STATUS.DELETED) {
 				logger.error({
@@ -298,7 +294,7 @@ class CandidateService {
 					requestId: requestId(),
 					exceptionType: Constants.EXCEPTION.CANDIDATE,
 				};
-				this.errorFactory.getError(this.validationHandlerFactory, this.errorResponse);
+				this.errorFactory.throwError(this.errorResponse);
 			}
 
 			return candidate;
@@ -307,6 +303,8 @@ class CandidateService {
 				event: 'CandidateService.validateDeletition',
 				error: err.message,
 			});
+
+			throw err;
 		}
 	}
 }

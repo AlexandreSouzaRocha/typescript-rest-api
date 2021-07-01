@@ -1,10 +1,8 @@
 import { Request, Response } from 'express';
-
 import CandidateService from '../services/CandidateService';
 import logger from '../utils/logger';
 import Constants from '../utils/constants';
 import Candidate from '../interfaces/Candidate';
-import CandidateDTO from '../models/Candidate.model';
 import ErrorFactory from '../errors/ErrorFactory';
 import Commons from '../utils/Commons';
 import CandidateFilters from '../interfaces/CandidateFilters';
@@ -31,7 +29,7 @@ export const postCandidates = async (request: Request, response: Response): Prom
 
 		return response
 			.status(err.statusCode || Constants.HTTPSTATUS.BAD_REQUEST)
-			.json(errorFactory.getResponse(err || err.message));
+			.json(errorFactory.getErrorResponse(err || err.message));
 	}
 };
 
@@ -51,7 +49,7 @@ export const getCandidateByUniqueId = async (request: Request, response: Respons
 
 		return response
 			.status(err.code || Constants.HTTPSTATUS.BAD_REQUEST)
-			.json(errorFactory.getResponse(err || err.message));
+			.json(errorFactory.getErrorResponse(err || err.message));
 	}
 };
 
@@ -71,7 +69,7 @@ export const getCandidateByCPf = async (request: Request, response: Response): P
 
 		return response
 			.status(err.code || Constants.HTTPSTATUS.BAD_REQUEST)
-			.json(errorFactory.getResponse(err || err.message));
+			.json(errorFactory.getErrorResponse(err || err.message));
 	}
 };
 
@@ -94,7 +92,7 @@ export const deleteByUniqueId = async (request: Request, response: Response): Pr
 
 		return response
 			.status(err.code || Constants.HTTPSTATUS.BAD_REQUEST)
-			.json(errorFactory.getResponse(err || err.message));
+			.json(errorFactory.getErrorResponse(err || err.message));
 	}
 };
 
@@ -115,7 +113,7 @@ export const putCandidates = async (request: Request, response: Response): Promi
 
 		return response
 			.status(err.statusCode || Constants.HTTPSTATUS.BAD_REQUEST)
-			.json(errorFactory.getResponse(err || err.message));
+			.json(errorFactory.getErrorResponse(err || err.message));
 	}
 };
 
