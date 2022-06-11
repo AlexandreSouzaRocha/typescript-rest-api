@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["ES2022"],
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"module": "ES2022",
+		"rootDir": "./src",
+		"baseUrl": ".",
+		"paths": {},
+		"types": [],
+		"sourceMap": true,
+		"outDir": "./dist",
+		"removeComments": true,
+		"noEmit": true,
+		"noEmitOnError": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"useUnknownInCatchVariables": false,
+		"skipLibCheck": true
+	},
+	"include": [],
+	"exclude": []
+}
