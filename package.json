@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node ./dist/src/index.js",
     "dev": "npm run build && npm start",
-    "test": "npx jest --detectOpenHandles",
-    "test:dev": "npx jest --detectOpenHandles --watchAll",
+    "test": "npx jest --detectOpenHandles --runInBand",
+    "test:dev": "npx jest --detectOpenHandles --watchAll --runInBand",
     "build:ts": "npx tsc --build",
     "build:paths": "npx babel ./src --out-dir ./dist --extensions \".ts,.js\" --source-maps inline",
     "build": "npm run build:ts && npm run build:paths"
