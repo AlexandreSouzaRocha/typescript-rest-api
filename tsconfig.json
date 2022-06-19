@@ -8,9 +8,10 @@
 		"rootDir": "./src/main",
 		"baseUrl": ".",
 		"paths": {
-			"@/*": ["./src/main/*"],
+			"@/*": ["./src/main/*"]
 		},
-		"types": [],
+		"typeRoots": [],
+		"types": ["@types/node"],
 		"sourceMap": true,
 		"outDir": "./dist",
 		"removeComments": true,
@@ -24,6 +25,6 @@
 		"useUnknownInCatchVariables": false,
 		"skipLibCheck": true
 	},
-	"include": [],
-	"exclude": []
+	"include": ["src/main/**/*", "src/tests/**/*"],
+	"exclude": ["node_modules", "dist/**"]
 }
