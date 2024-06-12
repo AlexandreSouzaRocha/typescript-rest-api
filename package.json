@@ -57,6 +57,6 @@
     "eslint-plugin-react": "^7.20.3",
     "prettier": "^2.0.5",
     "serverless-offline": "^6.5.0",
-    "serverless-plugin-typescript": "^1.1.9"
+    "serverless-plugin-typescript": "^2.1.5"
   }
 }
